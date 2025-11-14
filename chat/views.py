@@ -22,7 +22,7 @@ DIABETES_MODEL = pickle.load(open('case_companion/diabetes_model.sav', 'rb'))
 HEART_MODEL = pickle.load(open('case_companion/heart_model.sav', 'rb'))
 
 # Configure Gemini API
-GEMINI_API_KEY = "AIzaSyCAEr7ehPoD8QTiKqpwcvCvdCvTjdssQ0c"
+GEMINI_API_KEY = ""
 genai.configure(api_key=GEMINI_API_KEY)
 
 
@@ -864,4 +864,5 @@ def load_chat_session(request, session_id):
         })
     except ChatSession.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Session not found'}, status=404)
+
 
