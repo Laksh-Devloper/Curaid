@@ -1,0 +1,1546 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curaid - Health Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="{% static 'health_assistant/css/styles.css' %}"
+        onerror="console.error('styles.css failed to load')">
+    <style>
+        /* Comfortable Dark Minimal Theme - Eye-friendly with #212121 base */
+        /* Healthtech Theme - Calming Blue & Teal */
+
+        body {
+            background: #1A2332;
+            color: #E8F1F5;
+            overflow: hidden;
+        }
+
+        #chat-page {
+            min-height: 100vh;
+            flex-grow: 1;
+        }
+
+        .glass-box {
+            background: #151D2A;
+            border-radius: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            border-right: 1px solid #243447;
+            transform: none;
+            transition: none;
+        }
+
+        .glass-box:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chat-bubble-user {
+            background: #4A90E2;
+            color: #FFFFFF;
+            border-radius: 18px;
+            box-shadow: none;
+            transform: none;
+            transition: none;
+        }
+
+        .chat-bubble-user:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chat-bubble-Curaid {
+            background: #243447;
+            color: #E8F1F5;
+            border-radius: 18px;
+            box-shadow: none;
+            transform: none;
+            transition: none;
+        }
+
+        .chat-bubble-Curaid:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .input-field-dark {
+            background: #151D2A;
+            border: 1px solid #2D4059;
+            color: #E8F1F5;
+            transition: border-color 0.2s ease;
+            border-radius: 12px;
+        }
+
+        .input-field-dark::placeholder {
+            color: #6B7F95;
+        }
+
+        .input-field-dark:focus {
+            background: #151D2A;
+            border-color: #3AAFA9;
+            box-shadow: 0 0 0 2px rgba(58, 175, 169, 0.15);
+        }
+
+        .action-button-dark {
+            background: #2D4059;
+            color: #E8F1F5;
+            box-shadow: none;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .action-button-dark::before {
+            display: none;
+        }
+
+        .action-button-dark:hover {
+            transform: none;
+            background: #3A5270;
+            box-shadow: none;
+        }
+
+        .action-button-dark.active {
+            background: #3AAFA9;
+            color: #FFFFFF;
+            border: none;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #example-input {
+            background: #151D2A;
+            border: 1px solid #2D4059;
+            color: #6B7F95;
+            border-radius: 8px;
+        }
+
+        #example-text {
+            color: #7FB3D5;
+        }
+
+        .history-item-dark {
+            color: #E8F1F5;
+            background: transparent;
+            transition: background 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .history-item-dark:hover {
+            background: #1F2D3D;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .history-item-dark .font-medium {
+            color: #FFFFFF;
+        }
+
+        .animate-pulse-dots {
+            animation: pulse-dots 1.4s infinite;
+        }
+
+        @keyframes pulse-dots {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+
+        #history-panel {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 256px;
+            transform: translateX(0);
+            transition: transform 0.3s ease-in-out;
+            z-index: 15;
+            border-right: 1px solid #243447;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            background: #151D2A;
+        }
+
+        #history-panel.collapsed {
+            transform: translateX(-100%);
+        }
+
+        #sidebar-toggle {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: #3AAFA9;
+            color: #FFFFFF;
+            padding: 8px 10px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: none;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        #sidebar-toggle:hover {
+            background: #32998E;
+        }
+
+        #sidebar-toggle.collapsed {
+            left: 0;
+        }
+
+        #sidebar-toggle .fa-chevron-left {
+            display: block;
+        }
+
+        #sidebar-toggle .fa-chevron-right {
+            display: none;
+        }
+
+        #sidebar-toggle.collapsed .fa-chevron-left {
+            display: none;
+        }
+
+        #sidebar-toggle.collapsed .fa-chevron-right {
+            display: block;
+        }
+
+        .chat-main-content {
+            margin-left: 256px;
+            transition: margin-left 0.3s ease-in-out;
+            width: calc(100% - 256px);
+            height: 100vh;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-main-content.sidebar-collapsed {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .chat-container {
+            height: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            justify-content: flex-end;
+        }
+
+        .chat-window {
+            background-color: #1A2332;
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-height: 0;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem;
+            background: #151D2A;
+            border-top: 1px solid #243447;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        #chat-form {
+            margin-bottom: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            background: transparent;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .todo-item.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+            color: #6B7F95;
+        }
+
+        .todo-item:hover {
+            background: #1F2D3D;
+        }
+
+        .todo-checkbox {
+            margin-right: 0.75rem;
+            accent-color: #3AAFA9;
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+            font-size: 0.9rem;
+        }
+
+        .todo-date {
+            font-size: 0.75rem;
+            color: #7FB3D5;
+            margin-left: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.85);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #151D2A;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #2D4059;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: none;
+            position: relative;
+        }
+
+        .close-button {
+            color: #6B7F95;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #E8F1F5;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #E8F1F5;
+        }
+
+        .modal-content input[type="number"],
+        .modal-content select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #2D4059;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: #1A2332;
+            color: #E8F1F5;
+        }
+
+        .modal-content input[type="number"]:focus,
+        .modal-content select:focus {
+            border-color: #3AAFA9;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(58, 175, 169, 0.15);
+        }
+
+        .modal-content .submit-button {
+            background-color: #3AAFA9;
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .modal-content .submit-button:hover {
+            background-color: #32998E;
+        }
+
+        .file-selected-indicator {
+            display: none;
+            font-size: 0.75rem;
+            color: #7FB3D5;
+            margin-left: 0.5rem;
+        }
+
+        .file-selected-indicator.show {
+            display: inline-block;
+        }
+
+        .action-button {
+            background-color: #3AAFA9;
+            color: #FFFFFF;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            background-color: #32998E;
+        }
+
+        /* Additional minimal touches */
+        .add-todo-btn {
+            background: transparent;
+            color: #7FB3D5;
+            border: 1px solid #2D4059;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-todo-btn:hover {
+            background: #1F2D3D;
+            border-color: #3AAFA9;
+            color: #3AAFA9;
+        }
+
+        .delete-session-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            color: #E57373;
+        }
+
+        .delete-session-btn:hover {
+            color: #EF5350;
+        }
+
+        .history-item-dark:hover .delete-session-btn {
+            opacity: 1;
+        }
+
+        /* Scrollbar styling for better aesthetics */
+        .chat-window::-webkit-scrollbar,
+        #history-list::-webkit-scrollbar,
+        #todo-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-window::-webkit-scrollbar-track,
+        #history-list::-webkit-scrollbar-track,
+        #todo-list::-webkit-scrollbar-track {
+            background: #151D2A;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb,
+        #history-list::-webkit-scrollbar-thumb,
+        #todo-list::-webkit-scrollbar-thumb {
+            background: #2D4059;
+            border-radius: 4px;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb:hover,
+        #history-list::-webkit-scrollbar-thumb:hover,
+        #todo-list::-webkit-scrollbar-thumb:hover {
+            background: #3A5270;
+        }
+
+        /* Icon colors for healthcare feel */
+        .fa-history,
+        .fa-clipboard-list,
+        .fa-robot {
+            color: #3AAFA9;
+        }
+
+        /* Accent for important elements */
+        h3 {
+            color: #FFFFFF;
+        }
+
+        /* Small text improvements */
+        small {
+            color: #6B7F95;
+        }
+
+        @media (max-width: 768px) {
+            #history-panel {
+                width: 100%;
+                top: 0;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+                border-right: none;
+                z-index: 30;
+            }
+
+            #history-panel.collapsed {
+                transform: translateX(-100%);
+            }
+
+            #sidebar-toggle {
+                top: 10px;
+                transform: none;
+                padding: 6px 8px;
+                font-size: 0.9em;
+                z-index: 40;
+            }
+
+            #sidebar-toggle.collapsed {
+                left: 0;
+            }
+
+            .chat-main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+            }
+
+            .chat-container {
+                height: 100%;
+                padding: 0;
+            }
+
+            .chat-window {
+                padding: 1rem;
+            }
+
+            .chat-input-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-[Poppins]">
+    <div id="fallback-content" class="flex items-center justify-center min-h-screen bg-gray-900 text-gray-400">
+        Loading chat... If this persists, check console for errors.
+    </div>
+
+    <div id="chat-page" class="chat-page flex flex-col min-h-screen">
+        <button id="sidebar-toggle" class="z-30">
+            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <main class="flex flex-1">
+            <div id="history-panel" class="glass-box p-5 z-15 flex flex-col">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-100">
+                        <i class="fas fa-history mr-2 text-indigo-400"></i> Chat History
+                    </h3>
+                    <a href="{% url 'index' %}"
+                        class="action-button-dark px-3 py-1 rounded-md text-xs font-semibold flex items-center">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
+                <ul id="history-list" class="space-y-2 overflow-y-auto mb-4 flex-grow">
+                    {% for session in chat_sessions %}
+                    <li class="history-item-dark p-2 rounded-lg cursor-pointer flex items-center justify-between session-item"
+                        data-session-id="{{ session.session_id }}">
+                        <div class="flex flex-col flex-grow session-content">
+                            <span class="font-medium text-sm truncate">{{ session.title|default:"New Chat" }}</span>
+                            <span class="text-xs text-gray-500 mt-1">{{ session.updated_at|date:"M d, Y" }}</span>
+                        </div>
+                        <button class="delete-session-btn text-red-400 hover:text-red-600 ml-2 p-1"
+                            data-session-id="{{ session.session_id }}" title="Delete session">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </li>
+                    {% empty %}
+                    <li class="text-gray-500 italic p-2 text-sm">No sessions yet.</li>
+                    {% endfor %}
+                </ul>
+                <button id="new-chat"
+                    class="action-button-dark w-full py-2 rounded-lg text-sm font-bold flex items-center justify-center mb-6">
+                    <i class="fas fa-plus-circle mr-2"></i> New Chat
+                </button>
+
+                <div id="todo-list-panel" class="border-t border-gray-700 pt-4 flex-grow flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-100">
+                            <i class="fas fa-clipboard-list mr-2 text-green-400"></i> To-Do List
+                        </h3>
+                        <button id="addTodoPromptBtn" class="add-todo-btn" title="Click to add a new to-do via chat">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                    </div>
+                    <ul id="todo-list" class="space-y-2 overflow-y-auto flex-grow">
+                    </ul>
+                    <button id="clear-completed-todos"
+                        class="action-button-dark w-full mt-4 py-2 rounded-lg text-xs font-semibold flex items-center justify-center">
+                        <i class="fas fa-check-double mr-2"></i> Clear Completed
+                    </button>
+                </div>
+            </div>
+
+            <div id="chat-main-content" class="flex flex-col flex-1 chat-main-content">
+                <div class="chat-container flex flex-col min-h-screen relative z-10 overflow-hidden">
+                    <div class="flex-1 overflow-y-auto chat-window space-y-4" id="chat-window">
+                        {% for message in chat_history %}
+                        {% if message.message %}
+                        <div class="flex justify-end">
+                            <div
+                                class="chat-bubble-user ml-auto animate__animated animate__fadeInRight animate__faster">
+                                <p class="font-medium mb-0.5 p-3">{{ message.message }}</p>
+                                <small class="block text-right text-xs text-indigo-200 mt-1 pr-3 pb-3">
+                                    <span class="pl-3">{{ message.timestamp|date:"Y-m-d H:i" }}</span>
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if message.bot_response %}
+                        <div class="flex justify-start">
+                            <div
+                                class="chat-bubble-Curaid mr-auto animate__animated animate__fadeInLeft animate__faster">
+                                <div class="font-medium mb-0.5 p-3">
+                                    <strong></strong>
+                                    <span class="bot-response-text">{{ message.bot_response }}</span>
+                                </div>
+                                <small class="block text-right text-xs text-gray-500 mt-1 pr-3 pb-3">
+                                    <span class="pl-3">{{ message.timestamp|date:"Y-m-d H:i" }}</span>
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% empty %}
+                        <p
+                            class="text-gray-400 text-center text-sm italic mt-8 animate__animated animate__fadeIn animate__delay-1s">
+                            <i class="fas fa-robot text-indigo-400 mr-2"></i> Hello! How can I assist your health today?
+                        </p>
+                        {% endfor %}
+                    </div>
+                    <div class="chat-input-area">
+                        <form id="chat-form" method="POST" action="{% url 'chat_room' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="flex flex-wrap gap-2 mb-3 justify-center">
+                                <button type="button" data-mode="general"
+                                    class="ai-mode-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold active">General
+                                    Health</button>
+                                <button type="button" data-mode="symptoms"
+                                    class="ai-mode-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold">Symptoms
+                                    Predictor</button>
+                                <button type="button" data-mode="mental"
+                                    class="ai-mode-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold">Mental
+                                    Health Assistant</button>
+                                <button type="button" data-mode="disease"
+                                    class="ai-mode-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold">Disease
+                                    Predictor</button>
+                                <button type="button" id="generate-report-button"
+                                    class="action-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold">Generate
+                                    Health Report</button>
+                                <input type="hidden" name="ai-mode" id="hidden-ai-mode" value="{{ ai_mode }}">
+                            </div>
+
+                            <div id="disease-type-buttons"
+                                class="flex flex-wrap gap-2 mb-3 justify-center {% if ai_mode != 'disease' %}hidden{% endif %}">
+                                <button type="button" data-disease="diabetes"
+                                    class="disease-type-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold {% if disease_type == 'diabetes' %}active{% endif %}">Diabetes</button>
+                                <button type="button" data-disease="heart"
+                                    class="disease-type-button action-button-dark px-4 py-2 rounded-lg text-xs font-semibold {% if disease_type == 'heart' %}active{% endif %}">Heart</button>
+                                <input type="hidden" name="disease-type" id="hidden-disease-type"
+                                    value="{{ disease_type }}">
+                            </div>
+
+                            <div id="example-input"
+                                class="text-xs text-gray-400 mb-3 bg-gray-800 p-2 rounded-lg border border-gray-700 hidden animate__animated animate__fadeInUp animate__faster">
+                                Example input: <span id="example-text"
+                                    class="font-mono text-indigo-300 text-wrap break-all"></span>
+                                <button type="button" id="use-example-btn"
+                                    class="ml-2 px-2 py-1 text-xs text-white bg-indigo-600 rounded hover:bg-indigo-500">
+                                    Use this
+                                </button>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <input type="file" id="health-report-upload" name="health_report"
+                                    accept=".pdf,.jpg,.jpeg,.png,.txt" class="hidden">
+                                <label for="health-report-upload"
+                                    class="action-button-dark px-3 py-2 rounded-lg cursor-pointer flex items-center">
+                                    <i class="fas fa-paperclip mr-2"></i>
+                                    <span id="upload-label-text">Upload Report</span>
+                                </label>
+                                <span id="file-indicator" class="file-selected-indicator"></span>
+                                <input type="text" id="chat_input" name="message"
+                                    class="input-field-dark flex-1 p-2 rounded-lg focus:outline-none text-sm"
+                                    placeholder="Ask a general health question..." required>
+                                <button type="submit"
+                                    class="action-button-dark px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center">
+                                    Send <i class="fas fa-paper-plane ml-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="health-report-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Health Report Questions</h2>
+            <form id="health-report-form">
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input style="color: white;" type="number" id="age" name="age" required min="1" max="120">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select style="color: white;" id="gender" name="gender" required>
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="height_cm">Height (cm):</label>
+                    <input style="color:white" type="number" id="height_cm" name="height_cm" required min="50"
+                        max="250">
+                </div>
+                <div class="form-group">
+                    <label for="weight_kg">Weight (kg):</label>
+                    <input style="color:white" type="number" id="weight_kg" name="weight_kg" required min="20"
+                        max="300">
+                </div>
+                <div class="form-group">
+                    <label for="exercise_frequency">Exercise Frequency:</label>
+                    <select style="color:white" id="exercise_frequency" name="exercise_frequency" required>
+                        <option value="">Select</option>
+                        <option value="daily">Daily</option>
+                        <option value="3-4_times_week">3-4 times a week</option>
+                        <option value="1-2_times_week">1-2 times a week</option>
+                        <option value="rarely">Rarely/Never</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="diet_quality">Diet Quality:</label>
+                    <select style="color:white" id="diet_quality" name="diet_quality" required>
+                        <option value="">Select</option>
+                        <option value="excellent">Excellent (balanced, whole foods)</option>
+                        <option value="good">Good (mostly healthy, some treats)</option>
+                        <option value="average">Average (mix of healthy and unhealthy)</option>
+                        <option value="poor">Poor (mostly unhealthy/processed)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="smoking_status">Smoking Status:</label>
+                    <select style="color:white" id="smoking_status" name="smoking_status" required>
+                        <option value="">Select</option>
+                        <option value="never">Never Smoked</option>
+                        <option value="former">Former Smoker</option>
+                        <option value="current">Current Smoker</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="alcohol_consumption">Alcohol Consumption:</label>
+                    <select style="color:white" id="alcohol_consumption" name="alcohol_consumption" required>
+                        <option value="">Select</option>
+                        <option value="never">Never</option>
+                        <option value="rarely">Rarely</option>
+                        <option value="moderate">Moderate (1-2 drinks/day)</option>
+                        <option value="heavy">Heavy (3+ drinks/day)</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-button">Generate Report</button>
+            </form>
+        </div>
+    </div>
+    <script src="{% static 'health_assistant/js/script.js' %}"
+        onerror="console.error('script.js failed to load')"></script>
+    <script>
+        // Get DOM elements
+        const chatInput = document.getElementById('chat_input');
+        const fileInput = document.getElementById('health-report-upload');
+
+        function appendMessage(sender, message, type) {
+            const chatWindow = document.getElementById('chat-window');
+            const now = new Date();
+            const timestamp = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0');
+
+            let messageHtml = '';
+            if (type === 'bot') {
+                messageHtml = `
+                    <div class="flex justify-start">
+                        <div class="chat-bubble-Curaid mr-auto animate__animated animate__fadeInLeft animate__faster">
+                            <p class="font-medium mb-0.5 p-3">${sender}: ${message}</p>
+                            <small class="block text-right text-xs text-gray-500 mt-1 pr-3 pb-3">
+                                <span class="pl-3">${timestamp}</span>
+                            </small>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'user') {
+                messageHtml = `
+                    <div class="flex justify-end">
+                        <div class="chat-bubble-user ml-auto animate__animated animate__fadeInRight animate__faster">
+                            <p class="font-medium mb-0.5 p-3">${message}</p>
+                            <small class="block text-right text-xs text-indigo-200 mt-1 pr-3 pb-3">
+                                <span class="pl-3">${timestamp}</span>
+                            </small>
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatWindow.innerHTML += messageHtml;
+            scrollToBottom();
+        }
+
+
+
+        // Function to display text with typing animation
+        function typeMessage(text, elementId, speed = 30) {
+            const element = document.getElementById(elementId);
+            let index = 0;
+
+            return new Promise((resolve) => {
+                const interval = setInterval(() => {
+                    if (index < text.length) {
+                        element.textContent += text.charAt(index);
+                        index++;
+                        scrollToBottom(); // Keep scrolling as text appears
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        // Modal handlers
+        const reportModal = document.getElementById('health-report-modal');
+        const generateReportBtn = document.getElementById('generate-report-button');
+        const closeButton = document.querySelector('#health-report-modal .close-button');
+
+        generateReportBtn.onclick = function () {
+            reportModal.style.display = 'block';
+        }
+
+        closeButton.onclick = function () {
+            reportModal.style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == reportModal) {
+                reportModal.style.display = 'none';
+            }
+        }
+
+        const healthReportForm = document.getElementById('health-report-form');
+        healthReportForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            reportModal.style.display = 'none';
+            appendMessage('Curaid', 'Generating your personalized health dashboard...', 'bot');
+
+            const formData = new FormData(healthReportForm);
+
+            try {
+                const response = await fetch("{% url 'generate_health_report' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    appendMessage('Curaid', `Error: ${data.message}`, 'bot');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                appendMessage('Curaid', 'Sorry, something went wrong. Please try again.', 'bot');
+            }
+        });
+
+        try {
+            console.log('Attempting to show chat page');
+            document.getElementById('fallback-content').classList.add('hidden');
+            document.getElementById('chat-page').classList.add('visible');
+            document.getElementById('chat-page').classList.remove('hidden');
+            console.log('Chat page shown successfully');
+
+            function scrollToBottom() {
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+
+            scrollToBottom();
+
+            // Sidebar Toggle Logic
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const historyPanel = document.getElementById('history-panel');
+            const chatMainContent = document.getElementById('chat-main-content');
+
+            let isSidebarCollapsed = window.innerWidth <= 768;
+
+            function updateSidebarState() {
+                if (isSidebarCollapsed) {
+                    historyPanel.classList.add('collapsed');
+                    sidebarToggle.classList.add('collapsed');
+                    chatMainContent.classList.add('sidebar-collapsed');
+                } else {
+                    historyPanel.classList.remove('collapsed');
+                    sidebarToggle.classList.remove('collapsed');
+                    chatMainContent.classList.remove('sidebar-collapsed');
+                }
+            }
+
+            updateSidebarState();
+
+            sidebarToggle.addEventListener('click', () => {
+                isSidebarCollapsed = !isSidebarCollapsed;
+                updateSidebarState();
+            });
+
+            if (window.innerWidth <= 768) {
+                chatMainContent.addEventListener('click', () => {
+                    if (!isSidebarCollapsed) {
+                        isSidebarCollapsed = true;
+                        updateSidebarState();
+                    }
+                });
+            }
+
+            // AI Mode and Disease Type Button Logic
+            const aiModeButtons = document.querySelectorAll('.ai-mode-button');
+            const hiddenAiModeInput = document.getElementById('hidden-ai-mode');
+            const diseaseTypeButtons = document.querySelectorAll('.disease-type-button');
+            const diseaseTypeButtonsContainer = document.getElementById('disease-type-buttons');
+            const hiddenDiseaseTypeInput = document.getElementById('hidden-disease-type');
+            const exampleInputDiv = document.getElementById('example-input');
+            const exampleTextSpan = document.getElementById('example-text');
+            const messageInput = document.querySelector('input[name="message"]');
+
+            function updateFormElements() {
+                const selectedMode = hiddenAiModeInput.value;
+
+                messageInput.placeholder = "Enter your message...";
+
+                diseaseTypeButtonsContainer.classList.add('hidden');
+                exampleInputDiv.classList.add('hidden');
+                exampleTextSpan.textContent = '';
+
+                if (selectedMode === 'disease') {
+                    exampleInputDiv.classList.remove('hidden');
+                    diseaseTypeButtonsContainer.classList.remove('hidden');
+                    updateExampleText();
+                    messageInput.placeholder = "Enter parameters (e.g., age: 50, sex: 1, ...)";
+                } else if (selectedMode === 'symptoms') {
+                    exampleInputDiv.classList.remove('hidden');
+                    exampleTextSpan.textContent = 'age: 30, symptoms: fatigue, headache';
+                    messageInput.placeholder = "Enter age and symptoms (e.g., age: 30, symptoms: fever, cough)";
+                } else if (selectedMode === 'mental') {
+                    exampleInputDiv.classList.remove('hidden');
+                    exampleTextSpan.textContent = "I'm feeling stressed, can you help?";
+                    messageInput.placeholder = "Describe how you're feeling...";
+                } else if (selectedMode === 'todo') {
+                    exampleInputDiv.classList.remove('hidden');
+                    exampleTextSpan.textContent = "Add todo: Go for a 30-min walk, List todos, Done todo: 1";
+                    messageInput.placeholder = "Enter a to-do command...";
+                } else {
+                    messageInput.placeholder = "Ask a general health question (e.g., What are benefits of exercise?)";
+                }
+            }
+
+            function updateExampleText() {
+                const selectedDisease = hiddenDiseaseTypeInput.value;
+                if (selectedDisease === 'diabetes') {
+                    exampleTextSpan.textContent = 'pregnancies: 2, glucose: 120, blood_pressure: 70, skin_thickness: 20, insulin: 0, bmi: 32, diabetes_pedigree_function: 0.5, age: 30';
+                } else if (selectedDisease === 'heart') {
+                    exampleTextSpan.textContent = 'age: 50, sex: 1, cp: 0, trestbps: 120, chol: 200, fbs: 0, restecg: 1, thalach: 150, exang: 0, oldpeak: 1.0, slope: 2, ca: 0, thal: 3';
+                }
+            }
+
+            aiModeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    aiModeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    hiddenAiModeInput.value = button.dataset.mode;
+                    updateFormElements();
+                });
+            });
+
+            diseaseTypeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    diseaseTypeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    hiddenDiseaseTypeInput.value = button.dataset.disease;
+                    updateExampleText();
+                });
+            });
+
+            const initialAiMode = hiddenAiModeInput.value || 'general';
+            const initialAiModeButton = document.querySelector(`.ai-mode-button[data-mode="${initialAiMode}"]`);
+            if (initialAiModeButton) {
+                initialAiModeButton.click();
+            } else {
+                document.querySelector('.ai-mode-button[data-mode="general"]').click();
+            }
+
+            const initialDiseaseType = hiddenDiseaseTypeInput.value || 'diabetes';
+            const initialDiseaseTypeButton = document.querySelector(`.disease-type-button[data-disease="${initialDiseaseType}"]`);
+            if (initialDiseaseTypeButton) {
+                initialDiseaseTypeButton.click();
+            } else {
+                if (hiddenAiModeInput.value === 'disease') {
+                    document.querySelector('.disease-type-button[data-disease="diabetes"]').click();
+                }
+            }
+
+            document.getElementById('new-chat').addEventListener('click', async function (e) {
+                e.preventDefault();
+
+                try {
+                    // Call backend to create new session
+                    const response = await fetch('/chat/new-session/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        // Clear chat window
+                        const chatWindow = document.getElementById('chat-window');
+                        chatWindow.innerHTML = '<p class="text-gray-400 text-center text-sm italic mt-8 animate__animated animate__fadeIn animate__delay-1s"><i class="fas fa-robot text-indigo-400 mr-2"></i> Hello! How can I assist your health today?!</p>';
+                        scrollToBottom();
+
+                        // Reset form
+                        document.getElementById('chat-form').reset();
+                        aiModeButtons.forEach(btn => btn.classList.remove('active'));
+                        document.querySelector('.ai-mode-button[data-mode="general"]').classList.add('active');
+                        hiddenAiModeInput.value = 'general';
+                        updateFormElements();
+
+                        // Reload page to refresh session list
+                        setTimeout(() => location.reload(), 500);
+                    }
+                } catch (error) {
+                    console.error('Error creating new session:', error);
+                }
+            });
+            // To-Do List Rendering Function
+            function renderTodos(todos) {
+                const todoListUl = document.getElementById('todo-list');
+                todoListUl.innerHTML = '';
+
+                if (todos.length === 0) {
+                    todoListUl.innerHTML = '<li class="text-gray-500 italic p-2 text-sm">No to-dos yet!</li>';
+                    document.getElementById('clear-completed-todos').classList.add('hidden');
+                    return;
+                }
+
+                let hasCompletedTodos = false;
+                todos.forEach(todo => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('todo-item');
+                    if (todo.completed) {
+                        listItem.classList.add('completed');
+                        hasCompletedTodos = true;
+                    }
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.classList.add('todo-checkbox');
+                    checkbox.checked = todo.completed;
+                    checkbox.dataset.todoId = todo.id;
+
+                    checkbox.addEventListener('change', async function () {
+                        const todoId = this.dataset.todoId;
+                        const isChecked = this.checked;
+                        try {
+                            const response = await fetch(`/chat/mark_todo_done/${todoId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({ completed: isChecked })
+                            });
+                            if (!response.ok) {
+                                throw new Error('Failed to update todo status.');
+                            }
+                            const data = await response.json();
+                            renderTodos(data.todos);
+                        } catch (error) {
+                            console.error('Error marking todo:', error);
+                            alert('Failed to update to-do status. Please try again.');
+                            this.checked = !isChecked;
+                        }
+                    });
+
+                    const todoText = document.createElement('span');
+                    todoText.classList.add('todo-text');
+                    todoText.textContent = todo.task_description;
+
+                    const todoDate = document.createElement('span');
+                    todoDate.classList.add('todo-date');
+                    if (todo.due_date) {
+                        const today = new Date();
+                        const dueDate = new Date(todo.due_date);
+                        dueDate.setHours(0, 0, 0, 0);
+                        today.setHours(0, 0, 0, 0);
+
+                        if (dueDate.getTime() === today.getTime()) {
+                            todoDate.textContent = '(Today)';
+                            todoDate.classList.add('text-yellow-400');
+                        } else if (dueDate.getTime() === today.getTime() + (24 * 60 * 60 * 1000)) {
+                            todoDate.textContent = '(Tomorrow)';
+                            todoDate.classList.add('text-green-400');
+                        } else {
+                            todoDate.textContent = `(${new Date(todo.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})`;
+                        }
+                    }
+
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(todoText);
+                    listItem.appendChild(todoDate);
+                    todoListUl.appendChild(listItem);
+                });
+
+                if (hasCompletedTodos) {
+                    document.getElementById('clear-completed-todos').classList.remove('hidden');
+                } else {
+                    document.getElementById('clear-completed-todos').classList.add('hidden');
+                }
+            }
+
+            const initialTodos = JSON.parse('{{ active_todos|safe }}');
+            renderTodos(initialTodos);
+
+            document.getElementById('clear-completed-todos').addEventListener('click', async function () {
+                if (!confirm('Are you sure you want to clear all completed tasks?')) {
+                    return;
+                }
+                try {
+                    const response = await fetch('/chat/clear_completed_todos/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to clear completed todos.');
+                    }
+                    const data = await response.json();
+                    renderTodos(data.todos);
+                } catch (error) {
+                    console.error('Error clearing todos:', error);
+                    alert('Failed to clear completed to-dos. Please try again.');
+                }
+            });
+
+            // File Input Handler
+            fileInput.addEventListener('change', function (e) {
+                const labelText = document.getElementById('upload-label-text');
+                const fileIndicator = document.getElementById('file-indicator');
+
+                if (this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    const fileSize = (this.files[0].size / 1024).toFixed(1);
+
+                    labelText.textContent = '✓ File Selected';
+                    fileIndicator.textContent = `${fileName} (${fileSize}KB)`;
+                    fileIndicator.classList.add('show');
+
+                    chatInput.value = `Analyzing health report: ${fileName}`;
+                    chatInput.readOnly = true;
+
+                    setTimeout(() => {
+                        document.getElementById('chat-form').dispatchEvent(new Event('submit', {
+                            bubbles: true,
+                            cancelable: true
+                        }));
+                    }, 500);
+                }
+            });
+
+            // Form submission with AJAX
+            document.getElementById('chat-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+                const chatWindow = document.getElementById('chat-window');
+
+                if (chatWindow.querySelector('p.italic')) {
+                    chatWindow.innerHTML = '';
+                }
+
+                const userMessage = formData.get('message');
+                const uploadedFile = formData.get('health_report');
+
+                let displayMessage = userMessage;
+                if (uploadedFile && uploadedFile.size > 0) {
+                    displayMessage = `📎 ${uploadedFile.name} - ${userMessage}`;
+                }
+
+                const now = new Date();
+                const timestamp = now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0') + ' ' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0');
+
+                chatWindow.innerHTML += `
+                    <div class="flex justify-end">
+                        <div class="chat-bubble-user ml-auto animate__animated animate__fadeInRight animate__faster">
+                            <p class="font-medium mb-0.5 p-3">${displayMessage}</p>
+                            <small class="block text-right text-xs text-indigo-200 mt-1 pr-3 pb-3">
+                                <span class="pl-3">${timestamp}</span>
+                            </small>
+                        </div>
+                    </div>
+                `;
+                scrollToBottom();
+
+                form.reset();
+                fileInput.value = null;
+                fileInput.type = 'text';
+                fileInput.type = 'file';
+
+                const labelText = document.getElementById('upload-label-text');
+                const fileIndicator = document.getElementById('file-indicator');
+                if (labelText) labelText.textContent = 'Upload Report';
+                if (fileIndicator) fileIndicator.classList.remove('show');
+                chatInput.readOnly = false;
+
+                const loadingBubble = document.createElement('div');
+                loadingBubble.classList.add('flex', 'justify-start');
+                loadingBubble.innerHTML = `
+                    <div class="chat-bubble-Curaid mr-auto animate__animated animate__fadeInLeft animate__faster">
+                        <p class="font-medium mb-0.5 flex items-center p-3">Curaid is typing<span class="ml-1 flex">
+                            <span class="animate-pulse-dots" style="animation-delay: 0s;">.</span>
+                            <span class="animate-pulse-dots" style="animation-delay: 0.2s;">.</span>
+                            <span class="animate-pulse-dots" style="animation-delay: 0.4s;">.</span>
+                        </span></p>
+                        <small class="block text-right text-xs text-gray-500 mt-1 pr-3 pb-3">
+                            <span class="pl-3">${timestamp}</span>
+                        </small>
+                    </div>
+                `;
+                chatWindow.appendChild(loadingBubble);
+                scrollToBottom();
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.error || 'Server error');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(async data => {
+                        loadingBubble.remove();
+
+                        // Format the response
+                        const formattedResponse = formatBotResponse(data.bot_response);
+
+                        // Create message bubble with empty content
+                        const messageId = 'typing-message-' + Date.now();
+                        chatWindow.innerHTML += `
+        <div class="flex justify-start">
+            <div class="chat-bubble-Curaid mr-auto animate__animated animate__fadeInLeft animate__faster">
+                <div class="font-medium mb-0.5 p-3">
+                    <strong>Curaid:</strong>
+                    <div id="${messageId}" style="display: inline;"></div>
+                </div>
+                <small class="block text-right text-xs text-gray-500 mt-1 pr-3 pb-3">
+                    <span class="pl-3">${timestamp}</span>
+                </small>
+            </div>
+        </div>
+    `;
+                        scrollToBottom();
+
+                        // Type the formatted message
+                        await typeMessageHTML(formattedResponse, messageId, 15);
+
+                        updateFormElements();
+                        if (data.todos) {
+                            renderTodos(data.todos);
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        loadingBubble.remove();
+                        chatWindow.innerHTML += `
+                        <div class="flex justify-start">
+                            <div class="chat-bubble-Curaid bg-red-800 mr-auto animate__animated animate__shakeX">
+                                <p class="font-medium mb-0.5 text-red-200 p-3">Error: ${error.message || 'Could not get response from Curaid. Please try again.'}</p>
+                                <small class="block text-right text-xs text-red-300 mt-1 pr-3 pb-3">
+                                    <span class="pl-3">${timestamp}</span>
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                        scrollToBottom();
+                    });
+            });
+        } catch (error) {
+            console.error('Error in chat page script:', error);
+        }
+        // Function to format bot response (convert markdown-like formatting to HTML)
+        function formatBotResponse(text) {
+            // Replace **text** with <strong>text</strong>
+            text = text.replace(/\*\*\*\*\*\*\*\*\*\*\*(.*?)\*\*\*\*\*\*\*\*\*\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*\*\*\*\*(.*?)\*\*\*\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // Replace single * with bullet points or remove them
+            text = text.replace(/^\*\s+/gm, '• ');
+
+            // Convert newlines to <br> tags
+            text = text.replace(/\n/g, '<br>');
+
+            // Add spacing after colons for better readability
+            text = text.replace(/:\s*<br>/g, ':<br><br>');
+
+            return text;
+        }
+        function setupAddTodoButton() {
+            const addTodoBtn = document.getElementById('addTodoPromptBtn');
+
+            if (addTodoBtn && chatInput) {
+                addTodoBtn.addEventListener('click', () => {
+                    chatInput.value = 'Add todo: ';
+                    chatInput.focus();
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const useExampleBtn = document.getElementById("use-example-btn");
+            if (useExampleBtn) {
+                useExampleBtn.addEventListener("click", () => {
+                    const exampleText = document.getElementById("example-text").innerText;
+                    chatInput.value = exampleText;
+                    chatInput.focus();
+                });
+            }
+        });
+
+        // Function to display HTML with typing animation
+        function typeMessageHTML(htmlText, elementId, speed = 15) {
+            const element = document.getElementById(elementId);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlText;
+            const text = tempDiv.textContent || tempDiv.innerText; // Get plain text for typing
+
+            let index = 0;
+
+            return new Promise((resolve) => {
+                const interval = setInterval(() => {
+                    if (index < text.length) {
+                        // Find the corresponding HTML at this position
+                        let charCount = 0;
+                        let htmlOutput = '';
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(htmlText, 'text/html');
+
+                        // Simple approach: just type character by character
+                        element.textContent = text.substring(0, index + 1);
+                        index++;
+                        scrollToBottom();
+                    } else {
+                        // Once done, replace with formatted HTML
+                        element.innerHTML = htmlText;
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        // Format all existing bot responses on page load
+        document.querySelectorAll('.bot-response-text').forEach(element => {
+            const originalText = element.textContent;
+            const formattedHTML = formatBotResponse(originalText);
+            element.innerHTML = formattedHTML;
+        });
+        setupAddTodoButton();
+
+
+        // Handle session clicks
+        document.querySelectorAll('.session-item').forEach(item => {
+            item.addEventListener('click', async function (e) {
+                // Don't load session if clicking delete button
+                if (e.target.closest('.delete-session-btn')) {
+                    return;
+                }
+
+                const sessionId = this.dataset.sessionId;
+
+                try {
+                    const response = await fetch(`/chat/load-session/${sessionId}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        // Clear and reload chat window with session messages
+                        const chatWindow = document.getElementById('chat-window');
+                        chatWindow.innerHTML = '';
+
+                        data.messages.forEach(msg => {
+                            if (msg.message) {
+                                chatWindow.innerHTML += `
+                            <div class="flex justify-end">
+                                <div class="chat-bubble-user ml-auto animate__animated animate__fadeInRight animate__faster">
+                                    <p class="font-medium mb-0.5 p-3">${msg.message}</p>
+                                    <small class="block text-right text-xs text-indigo-200 mt-1 pr-3 pb-3">
+                                        <span class="pl-3">${new Date(msg.timestamp).toLocaleString()}</span>
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                            }
+                            if (msg.bot_response) {
+                                const formattedResponse = formatBotResponse(msg.bot_response);
+                                chatWindow.innerHTML += `
+                            <div class="flex justify-start">
+                                <div class="chat-bubble-Curaid mr-auto animate__animated animate__fadeInLeft animate__faster">
+                                    <div class="font-medium mb-0.5 p-3">
+                                        <strong>Curaid:</strong>
+                                        <span>${formattedResponse}</span>
+                                    </div>
+                                    <small class="block text-right text-xs text-gray-500 mt-1 pr-3 pb-3">
+                                        <span class="pl-3">${new Date(msg.timestamp).toLocaleString()}</span>
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                            }
+                        });
+
+                        scrollToBottom();
+                    }
+                } catch (error) {
+                    console.error('Error loading session:', error);
+                }
+            });
+        });
+
+
+        // Handle delete session buttons
+        document.querySelectorAll('.delete-session-btn').forEach(btn => {
+            btn.addEventListener('click', async function (e) {
+                e.stopPropagation(); // Prevent triggering session load
+
+                if (!confirm('Are you sure you want to delete this chat session?')) {
+                    return;
+                }
+
+                const sessionId = this.dataset.sessionId;
+
+                try {
+                    const response = await fetch(`/chat/delete-session/${sessionId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        // Remove the session item from sidebar
+                        this.closest('.session-item').remove();
+
+                        // If no sessions left, show empty message
+                        const historyList = document.getElementById('history-list');
+                        if (historyList.children.length === 0) {
+                            historyList.innerHTML = '<li class="text-gray-500 italic p-2 text-sm">No sessions yet.</li>';
+                        }
+
+                        // Reload page if this was the current session
+                        setTimeout(() => location.reload(), 500);
+                    } else {
+                        alert('Failed to delete session: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting session:', error);
+                    alert('Failed to delete session');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

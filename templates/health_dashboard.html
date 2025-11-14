@@ -1,0 +1,560 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Curaid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(40, 40, 40, 0.6);
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(60, 60, 60, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .score-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        .tip-card {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(109, 40, 217, 0.2));
+            border-left: 4px solid #6d28d9;
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover {
+            transform: translateX(5px);
+            border-left-color: #4f46e5;
+        }
+
+        .metric-badge {
+            background: linear-gradient(45deg, #4f46e5, #6d28d9);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+        }
+
+        .action-button {
+            background: linear-gradient(45deg, #4f46e5, #6d28d9);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.6);
+        }
+
+        .download-button {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.6);
+        }
+
+        .download-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stagger-1 {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            animation-delay: 0.3s;
+        }
+
+        .stagger-4 {
+            animation-delay: 0.4s;
+        }
+
+        .health-category {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            width: 60%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #6d28d9);
+            transition: width 1s ease-out;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* PDF-specific styles */
+        @media print {
+            body {
+                background: #1a1a1a !important;
+            }
+
+            .glass-card {
+                background: rgba(40, 40, 40, 0.9) !important;
+                border: 1px solid rgba(60, 60, 60, 0.8) !important;
+                page-break-inside: avoid !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Ensure content is visible */
+        #dashboard-content {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8 fade-in-up">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-heartbeat text-indigo-400 mr-3"></i>Your Health Dashboard
+                </h1>
+                <p class="text-gray-400">Personalized insights and recommendations</p>
+            </div>
+            <div class="flex gap-3 no-print">
+
+                <a href="{% url 'chat_room' %}"
+                    class="action-button px-6 py-3 rounded-lg font-semibold flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Chat
+                </a>
+            </div>
+        </div>
+
+        <!-- Dashboard Content (to be converted to PDF) -->
+        <div id="dashboard-content">
+            <!-- Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Overall Health Score -->
+                <div class="glass-card p-8 text-center fade-in-up stagger-1">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-200">Overall Health Score</h2>
+                    <div class="score-circle mx-auto mb-4 relative">
+                        <svg width="200" height="200" viewBox="0 0 200 200" style="transform: rotate(0deg);">
+                            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.1)"
+                                stroke-width="12" />
+                            <circle id="score-circle" cx="100" cy="100" r="90" fill="none" stroke="url(#gradient)"
+                                stroke-width="12" stroke-linecap="round" stroke-dasharray="565.48"
+                                stroke-dashoffset="565.48"
+                                style="transform-origin: center; transform: rotate(-90deg); transition: stroke-dashoffset 1.5s ease-in-out;" />
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4f46e5" />
+                                    <stop offset="100%" style="stop-color:#6d28d9" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center"
+                            style="top: 0; left: 0; width: 200px; height: 200px;">
+                            <div>
+                                <p class="text-5xl font-bold text-white" id="score-display">0</p>
+                                <p class="text-sm text-gray-400 mt-1">out of 100</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="score-description" class="text-gray-300 text-sm">Calculating your health profile...</p>
+                </div>
+
+                <!-- Health Metrics -->
+                <div class="lg:col-span-2 glass-card p-8 fade-in-up stagger-2">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-200">
+                        <i class="fas fa-chart-line mr-2 text-indigo-400"></i>Health Metrics
+                    </h2>
+                    <div id="health-metrics-container">
+                        <div class="health-category">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-dumbbell text-indigo-400 text-xl"></i>
+                                <span class="font-medium">Fitness Level</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%" data-width="{{ fitness_score }}%"></div>
+                            </div>
+                            <span class="font-bold text-white ml-3">{{ fitness_score }}%</span>
+                        </div>
+                        <div class="health-category">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-utensils text-indigo-400 text-xl"></i>
+                                <span class="font-medium">Nutrition</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%" data-width="{{ nutrition_score }}%"></div>
+                            </div>
+                            <span class="font-bold text-white ml-3">{{ nutrition_score }}%</span>
+                        </div>
+                        <div class="health-category">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-smile text-indigo-400 text-xl"></i>
+                                <span class="font-medium">Lifestyle</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%" data-width="{{ lifestyle_score }}%"></div>
+                            </div>
+                            <span class="font-bold text-white ml-3">{{ lifestyle_score }}%</span>
+                        </div>
+                        <div class="health-category">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-shield-alt text-indigo-400 text-xl"></i>
+                                <span class="font-medium">Risk Factors</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%" data-width="{{ risk_factors_score }}%">
+                                </div>
+                            </div>
+                            <span class="font-bold text-white ml-3">{{ risk_factors_score }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips and Recommendations Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Positive Habits -->
+                <div class="glass-card p-8 fade-in-up stagger-3">
+                    <h2 class="text-xl font-semibold mb-6 text-green-400">
+                        <i class="fas fa-check-circle mr-2"></i>Keep Doing
+                    </h2>
+                    <div id="positive-habits" class="space-y-3">
+                        {% for habit in scores.positive_habits %}
+                        <div class="tip-card p-3 rounded-lg">
+                            <i class="fas fa-check text-green-400 mr-2"></i>
+                            <span class="text-sm">{{ habit }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Areas for Improvement -->
+                <div class="glass-card p-8 fade-in-up stagger-4">
+                    <h2 class="text-xl font-semibold mb-6 text-yellow-400">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Areas to Focus On
+                    </h2>
+                    <div id="improvement-areas" class="space-y-3">
+                        {% for area in scores.improvement_areas %}
+                        <div class="tip-card p-3 rounded-lg">
+                            <i class="fas fa-arrow-up text-yellow-400 mr-2"></i>
+                            <span class="text-sm">{{ area }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personalized Recommendations -->
+            <div class="glass-card p-8 mt-6 fade-in-up" style="animation-delay: 0.5s;">
+                <h2 class="text-xl font-semibold mb-6 text-gray-200">
+                    <i class="fas fa-lightbulb mr-2 text-yellow-400"></i>Personalized Action Plan
+                </h2>
+                <div id="recommendations-container" class="space-y-4">
+                    {% for rec in recommendations %}
+                    <div
+                        class="glass-card p-6 border-l-4 {% if rec.priority == 'high' %}border-red-500{% elif rec.priority == 'medium' %}border-yellow-500{% else %}border-green-500{% endif %}">
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl text-indigo-400">
+                                <i class="fas {{ rec.icon }}"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-white mb-2">{{ rec.title }}</h3>
+                                <p class="text-gray-300 text-sm">{{ rec.description }}</p>
+                            </div>
+                            <span class="metric-badge text-xs uppercase">{{ rec.priority }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- User Info Summary -->
+            <div class="glass-card p-6 mt-6 fade-in-up" style="animation-delay: 0.6s;">
+                <h3 class="text-lg font-semibold mb-4 text-gray-200">
+                    <i class="fas fa-user-circle mr-2 text-indigo-400"></i>Your Profile
+                </h3>
+                <div id="user-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl text-indigo-400 mb-2">
+                            <i class="fas fa-birthday-cake"></i>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-1">Age</p>
+                        <p class="text-sm font-semibold text-white">{{ user_data.age }} years</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl text-indigo-400 mb-2">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-1">BMI</p>
+                        <p class="text-sm font-semibold text-white">{{ scores.bmi }}</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl text-indigo-400 mb-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-1">Exercise</p>
+                        <p class="text-sm font-semibold text-white">{{ user_data.exercise_frequency|title }}</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl text-indigo-400 mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-1">Diet</p>
+                        <p class="text-sm font-semibold text-white">{{ user_data.diet_quality|title }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Footer (only visible in PDF) -->
+            <div class="mt-8 text-center text-sm text-gray-400" style="display: none;" id="pdf-footer">
+                <p>Generated by CurAid Health Assistant • {{ current_date }}</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const healthData = {
+            overall_score: parseInt('{{ overall_score|default:"0" }}') || 0,
+            metrics: {
+                fitness: parseInt('{{ fitness_score|default:"0" }}') || 0,
+                nutrition: parseInt('{{ nutrition_score|default:"0" }}') || 0,
+                lifestyle: parseInt('{{ lifestyle_score|default:"0" }}') || 0,
+                risk_factors: parseInt('{{ risk_factors_score|default:"0" }}') || 0
+            }
+        };
+
+        console.log('Health Data:', healthData);
+
+        function animateScore(targetScore) {
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreCircle = document.getElementById('score-circle');
+            const scoreDescription = document.getElementById('score-description');
+
+            // Ensure the circle starts from the beginning
+            const circumference = 565.48;
+            scoreCircle.style.strokeDasharray = circumference;
+            scoreCircle.style.strokeDashoffset = circumference;
+
+            let current = 0;
+            const increment = targetScore / 50;
+
+            const interval = setInterval(() => {
+                current += increment;
+                if (current >= targetScore) {
+                    current = targetScore;
+                    clearInterval(interval);
+                }
+
+                scoreDisplay.textContent = Math.round(current);
+                const offset = circumference - (current / 100) * circumference;
+                scoreCircle.style.strokeDashoffset = offset;
+            }, 30);
+
+            setTimeout(() => {
+                if (targetScore >= 80) {
+                    scoreDescription.textContent = 'Excellent! You\'re maintaining great health habits.';
+                } else if (targetScore >= 60) {
+                    scoreDescription.textContent = 'Good! Some areas could use attention.';
+                } else {
+                    scoreDescription.textContent = 'There\'s room for improvement. Let\'s work on it together!';
+                }
+            }, 1500);
+        }
+
+        window.addEventListener('load', () => {
+            animateScore(healthData.overall_score || 0);
+
+            // Animate progress bars
+            document.querySelectorAll('.progress-fill').forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.width = bar.dataset.width;
+                }, 100 * index);
+            });
+        });
+
+        // PDF Download functionality - Simple screenshot approach
+        document.getElementById('download-pdf-btn').addEventListener('click', async function () {
+            const button = this;
+            const originalContent = button.innerHTML;
+
+            // Disable button and show loading
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner"></div><span class="ml-2">Generating PDF...</span>';
+
+            try {
+                // Show PDF footer
+                const pdfFooter = document.getElementById('pdf-footer');
+                pdfFooter.style.display = 'block';
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+
+                // Wait for any animations and scroll
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const element = document.getElementById('dashboard-content');
+
+                // Capture the element as canvas with high quality
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#1a1a1a',
+                    logging: false,
+                    width: element.scrollWidth,
+                    height: element.scrollHeight,
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight,
+                    scrollX: 0,
+                    scrollY: 0
+                });
+
+                // Get canvas dimensions
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // Convert canvas to image
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                // Add first page
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                // Add additional pages if content is long
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                // Save the PDF
+                const fileName = 'CurAid_Health_Dashboard_' + new Date().toISOString().split('T')[0] + '.pdf';
+                pdf.save(fileName);
+
+                // Hide PDF footer
+                pdfFooter.style.display = 'none';
+
+                // Show success message
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Downloaded!';
+
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Failed to generate PDF: ' + error.message);
+
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = originalContent;
+                document.getElementById('pdf-footer').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

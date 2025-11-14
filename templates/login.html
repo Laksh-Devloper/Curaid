@@ -1,0 +1,607 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurAid - Login / Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1A2332;
+            color: #E8F1F5;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .login-page {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Glass card */
+        .glass-box {
+            background: rgba(21, 29, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid #2D4059;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .glass-box:hover {
+            border-color: #3AAFA9;
+            box-shadow: 0 12px 48px rgba(58, 175, 169, 0.2);
+        }
+
+        /* Logo */
+        .logo-text {
+            background: linear-gradient(135deg, #3AAFA9 0%, #4A90E2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            text-align: center;
+            color: #7FB3D5;
+            font-size: 0.875rem;
+            margin-bottom: 32px;
+        }
+
+        /* Tab buttons */
+        .tab-container {
+            display: flex;
+            background: rgba(36, 52, 71, 0.5);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 32px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #7FB3D5;
+            background: transparent;
+            border: none;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
+            color: #FFFFFF;
+        }
+
+        /* Input fields */
+        .glass-input {
+            background: #1A2332;
+            border: 1px solid #2D4059;
+            color: #E8F1F5;
+            border-radius: 10px;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .glass-input::placeholder {
+            color: #6B7F95;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #3AAFA9;
+            box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.15);
+            background: #1F2D3D;
+        }
+
+        /* Labels */
+        label {
+            display: block;
+            color: #E8F1F5;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        /* Form spacing */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .glass-button {
+            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
+            color: #FFFFFF;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .glass-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(58, 175, 169, 0.4);
+        }
+
+        .google-login-btn {
+            background: rgba(36, 52, 71, 0.5);
+            border: 1px solid #2D4059;
+            color: #E8F1F5;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            text-decoration: none;
+        }
+
+        .google-login-btn:hover {
+            background: rgba(36, 52, 71, 0.8);
+            border-color: #3AAFA9;
+            transform: translateY(-2px);
+        }
+
+        /* Links */
+        .text-link {
+            color: #3AAFA9;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .text-link:hover {
+            color: #4A90E2;
+            text-decoration: underline;
+        }
+
+        /* Error messages */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(21, 29, 42, 0.95);
+            border: 1px solid #2D4059;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal-content.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: rgba(36, 52, 71, 0.5);
+            border: 1px solid #2D4059;
+            color: #E8F1F5;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(36, 52, 71, 0.8);
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(58, 175, 169, 0.4);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #6B7F95;
+            margin: 24px 0;
+            font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #2D4059;
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        /* Hide class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Back to home link */
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #7FB3D5;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(36, 52, 71, 0.5);
+            border: 1px solid #2D4059;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            background: rgba(36, 52, 71, 0.8);
+            border-color: #3AAFA9;
+            color: #3AAFA9;
+        }
+
+        @media (max-width: 640px) {
+            .glass-box {
+                padding: 24px;
+            }
+
+            .logo-text {
+                font-size: 2rem;
+            }
+
+            .back-link {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                font-size: 0.875rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <canvas id="particles-canvas"></canvas>
+
+        <a href="{% url 'index' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+
+        <div class="glass-box fade-in">
+            <h1 class="logo-text">CurAid</h1>
+            <p class="logo-subtitle">Your AI-Powered Health Companion</p>
+
+            <div class="tab-container">
+                <button id="login-tab" class="tab-button active">Login</button>
+                <button id="signup-tab" class="tab-button">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="error-message animate__animated animate__shakeX">
+                        <i class="fas fa-exclamation-circle"></i> Your username or password was incorrect.
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="login-email">Email or Username</label>
+                    <input type="text" name="username" id="login-email" class="glass-input" placeholder="Enter your email or username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" name="password" id="login-password" class="glass-input" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="glass-button">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <a href="{% url 'google_login' %}" class="google-login-btn">
+                    <i class="fab fa-google text-lg"></i>
+                    <span>Continue with Google</span>
+                </a>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" id="forgot-password" class="text-link">Forgot Password?</a>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="hidden" method="POST" action="{% url 'signup' %}">
+                {% csrf_token %}
+                {% if signup_errors %}
+                    <div class="error-message animate__animated animate__shakeX">
+                        <i class="fas fa-exclamation-circle"></i> {{ signup_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" name="name" id="signup-name" class="glass-input" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" name="email" id="signup-email" class="glass-input" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" name="password" id="signup-password" class="glass-input" placeholder="Create a password" required>
+                </div>
+
+                <button type="submit" class="glass-button">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <a href="{% url 'google_login' %}" class="google-login-btn">
+                    <i class="fab fa-google text-lg"></i>
+                    <span>Continue with Google</span>
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-popup" class="modal-overlay hidden">
+        <div class="modal-content" id="forgot-password-modal-content">
+            <h3 class="modal-title">Reset Password</h3>
+            <form id="forgot-password-form" method="POST" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="reset-email">Email Address</label>
+                    <input type="email" name="email" id="reset-email" class="glass-input" placeholder="Enter your email" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-forgot-password" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+    <script src="{% static 'health_assistant/js/script.js' %}"></script>
+    <script>
+        // Particle animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? 'rgba(58, 175, 169, 0.3)' : 'rgba(74, 144, 226, 0.3)';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Tab switching
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+        });
+
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        // Forgot password modal
+        const modal = document.getElementById('forgot-password-popup');
+        const forgotLink = document.getElementById('forgot-password');
+        const cancelBtn = document.getElementById('cancel-forgot-password');
+        const modalContent = document.getElementById('forgot-password-modal-content');
+
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.add('show');
+            }, 10);
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            modalContent.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modalContent.classList.remove('show');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
