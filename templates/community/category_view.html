@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.name }} - Health Companion Forum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'health_assistant/css/dark-mode.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+        }
+
+        .category-header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #32998E;
+            transform: translateY(-2px);
+        }
+
+        .topics-list {
+            list-style: none;
+        }
+
+        .topic-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-secondary);
+        }
+
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .topic-title a:hover {
+            color: var(--accent-primary);
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        .pinned-badge {
+            background: var(--accent-secondary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{% url 'forum_home' %}"><i class="fas fa-home"></i> Forum</a> /
+            <span>{{ category.name }}</span>
+        </div>
+
+        <div class="category-header">
+            <div class="category-info">
+                <h1>
+                    <div class="category-icon" style="background: {{ category.color }};">
+                        <i class="{{ category.icon }}"></i>
+                    </div>
+                    {{ category.name }}
+                </h1>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">{{ category.description }}</p>
+            </div>
+            <a href="{% url 'create_topic' category.id %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Topic
+            </a>
+        </div>
+
+        <ul class="topics-list">
+            {% for topic in topics %}
+            <li class="topic-item">
+                <div class="topic-title">
+                    {% if topic.is_pinned %}
+                    <span class="pinned-badge"><i class="fas fa-thumbtack"></i> Pinned</span>
+                    {% endif %}
+                    <a href="{% url 'topic_view' topic.id %}">{{ topic.title }}</a>
+                </div>
+                <div class="topic-meta">
+                    <span><i class="fas fa-user"></i> {{ topic.author.username }}</span>
+                    <span><i class="fas fa-clock"></i> {{ topic.created_at|timesince }} ago</span>
+                    <span><i class="fas fa-comments"></i> {{ topic.reply_count }} replies</span>
+                    <span><i class="fas fa-eye"></i> {{ topic.views }} views</span>
+                </div>
+            </li>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>No topics yet</h3>
+                <p>Be the first to start a discussion in this category!</p>
+                <a href="{% url 'create_topic' category.id %}" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Create First Topic
+                </a>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="{% static 'health_assistant/js/theme-toggle.js' %}"></script>
+</body>
+
+</html>

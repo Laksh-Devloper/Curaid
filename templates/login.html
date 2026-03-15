@@ -1,607 +1,279 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CurAid - Login / Sign Up</title>
+    <title>Health Companion - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
+            background-color: #050507;
+            color: #F3F4F6;
             font-family: 'Inter', sans-serif;
-            background: #1A2332;
-            color: #E8F1F5;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        /* Animated background particles */
-        .login-page {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        #particles-canvas {
+        /* Ambient Background */
+        .ambient {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
         }
 
-        /* Glass card */
-        .glass-box {
-            background: rgba(21, 29, 42, 0.9);
+        .glass-panel {
+            background: rgba(14, 18, 27, 0.6);
             backdrop-filter: blur(20px);
-            border: 1px solid #2D4059;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
             transition: all 0.3s ease;
         }
 
-        .glass-box:hover {
-            border-color: #3AAFA9;
-            box-shadow: 0 12px 48px rgba(58, 175, 169, 0.2);
-        }
-
-        /* Logo */
-        .logo-text {
-            background: linear-gradient(135deg, #3AAFA9 0%, #4A90E2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2.5rem;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .logo-subtitle {
-            text-align: center;
-            color: #7FB3D5;
-            font-size: 0.875rem;
-            margin-bottom: 32px;
-        }
-
-        /* Tab buttons */
-        .tab-container {
-            display: flex;
-            background: rgba(36, 52, 71, 0.5);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 32px;
-        }
-
-        .tab-button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #7FB3D5;
-            background: transparent;
-            border: none;
-        }
-
-        .tab-button.active {
-            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
-            color: #FFFFFF;
-        }
-
-        /* Input fields */
-        .glass-input {
-            background: #1A2332;
-            border: 1px solid #2D4059;
-            color: #E8F1F5;
-            border-radius: 10px;
-            padding: 12px 16px;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .glass-input::placeholder {
-            color: #6B7F95;
-        }
-
-        .glass-input:focus {
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #8b5cf6;
             outline: none;
-            border-color: #3AAFA9;
-            box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.15);
-            background: #1F2D3D;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
         }
 
-        /* Labels */
-        label {
-            display: block;
-            color: #E8F1F5;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        /* Form spacing */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        /* Buttons */
-        .glass-button {
-            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
-            color: #FFFFFF;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            width: 100%;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-        }
-
-        .glass-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(58, 175, 169, 0.4);
-        }
-
-        .google-login-btn {
-            background: rgba(36, 52, 71, 0.5);
-            border: 1px solid #2D4059;
-            color: #E8F1F5;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 500;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-            text-decoration: none;
-        }
-
-        .google-login-btn:hover {
-            background: rgba(36, 52, 71, 0.8);
-            border-color: #3AAFA9;
-            transform: translateY(-2px);
-        }
-
-        /* Links */
-        .text-link {
-            color: #3AAFA9;
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.3s ease;
-        }
-
-        .text-link:hover {
-            color: #4A90E2;
-            text-decoration: underline;
-        }
-
-        /* Error messages */
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #FCA5A5;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            margin-bottom: 20px;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: rgba(21, 29, 42, 0.95);
-            border: 1px solid #2D4059;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            opacity: 0;
+        .tab-btn {
+            background: transparent;
+            color: #9CA3AF;
             transition: all 0.3s ease;
         }
 
-        .modal-content.show {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            padding: 12px;
-            background: rgba(36, 52, 71, 0.5);
-            border: 1px solid #2D4059;
-            color: #E8F1F5;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-cancel:hover {
-            background: rgba(36, 52, 71, 0.8);
-        }
-
-        .btn-submit {
-            flex: 1;
-            padding: 12px;
-            background: linear-gradient(135deg, #3AAFA9 0%, #32998E 100%);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(58, 175, 169, 0.4);
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #6B7F95;
-            margin: 24px 0;
-            font-size: 0.875rem;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #2D4059;
-        }
-
-        .divider span {
-            padding: 0 16px;
-        }
-
-        /* Hide class */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        /* Back to home link */
-        .back-link {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #7FB3D5;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(36, 52, 71, 0.5);
-            border: 1px solid #2D4059;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .back-link:hover {
-            background: rgba(36, 52, 71, 0.8);
-            border-color: #3AAFA9;
-            color: #3AAFA9;
-        }
-
-        @media (max-width: 640px) {
-            .glass-box {
-                padding: 24px;
-            }
-
-            .logo-text {
-                font-size: 2rem;
-            }
-
-            .back-link {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                font-size: 0.875rem;
-                padding: 6px 12px;
-            }
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
-<body>
-    <div class="login-page">
-        <canvas id="particles-canvas"></canvas>
 
-        <a href="{% url 'index' %}" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to Home</span>
-        </a>
+<body class="flex items-center justify-center min-h-screen relative">
 
-        <div class="glass-box fade-in">
-            <h1 class="logo-text">CurAid</h1>
-            <p class="logo-subtitle">Your AI-Powered Health Companion</p>
+    <div class="ambient"></div>
 
-            <div class="tab-container">
-                <button id="login-tab" class="tab-button active">Login</button>
-                <button id="signup-tab" class="tab-button">Sign Up</button>
+    <!-- Back Link -->
+    <a href="{% url 'index' %}"
+        class="absolute top-8 left-8 flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+        <div
+            class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
+            <i class="fas fa-arrow-left text-xs"></i>
+        </div>
+        <span class="text-sm font-medium">Back to Home</span>
+    </a>
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md p-6 animate__animated animate__fadeInUp">
+        <div class="glass-panel rounded-2xl p-8 w-full">
+
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="font-display text-3xl font-bold mb-2">Health <span class="text-brand-400">Companion</span>
+                </h1>
+                <p class="text-sm text-gray-500">Your Personal Health Guardian</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex p-1 bg-white/5 rounded-xl mb-8">
+                <button id="login-tab"
+                    class="tab-btn active flex-1 py-2.5 rounded-lg text-sm font-medium">Login</button>
+                <button id="signup-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-sm font-medium">Sign Up</button>
             </div>
 
             <!-- Login Form -->
-            <form id="login-form" method="POST" action="{% url 'login' %}">
+            <form id="login-form" method="POST" action="{% url 'login' %}" class="space-y-5">
                 {% csrf_token %}
                 {% if form.errors %}
-                    <div class="error-message animate__animated animate__shakeX">
-                        <i class="fas fa-exclamation-circle"></i> Your username or password was incorrect.
-                    </div>
+                <div
+                    class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2 animate__animated animate__shakeX">
+                    <i class="fas fa-exclamation-circle"></i> Invalid credentials
+                </div>
                 {% endif %}
 
-                <div class="form-group">
-                    <label for="login-email">Email or Username</label>
-                    <input type="text" name="username" id="login-email" class="glass-input" placeholder="Enter your email or username" required>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Email or Username</label>
+                    <input type="text" name="username"
+                        class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600"
+                        placeholder="name@example.com" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" name="password" id="login-password" class="glass-input" placeholder="Enter your password" required>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Password</label>
+                    <input type="password" name="password"
+                        class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600"
+                        placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="glass-button">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                <div class="flex justify-end">
+                    <a href="#" id="forgot-password"
+                        class="text-xs text-brand-400 hover:text-brand-300 transition-colors">Forgot Password?</a>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5">
+                    Sign In
                 </button>
-
-                <div class="divider">
-                    <span>OR</span>
-                </div>
-
-                <a href="{% url 'google_login' %}" class="google-login-btn">
-                    <i class="fab fa-google text-lg"></i>
-                    <span>Continue with Google</span>
-                </a>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="#" id="forgot-password" class="text-link">Forgot Password?</a>
-                </div>
             </form>
 
             <!-- Signup Form -->
-            <form id="signup-form" class="hidden" method="POST" action="{% url 'signup' %}">
+            <form id="signup-form" method="POST" action="{% url 'signup' %}" class="space-y-5 hidden">
                 {% csrf_token %}
                 {% if signup_errors %}
-                    <div class="error-message animate__animated animate__shakeX">
-                        <i class="fas fa-exclamation-circle"></i> {{ signup_errors }}
-                    </div>
+                <div
+                    class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2 animate__animated animate__shakeX">
+                    <i class="fas fa-exclamation-circle"></i> {{ signup_errors }}
+                </div>
                 {% endif %}
 
-                <div class="form-group">
-                    <label for="signup-name">Full Name</label>
-                    <input type="text" name="name" id="signup-name" class="glass-input" placeholder="Enter your full name" required>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Full Name</label>
+                    <input type="text" name="name"
+                        class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600"
+                        placeholder="John Doe" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="signup-email">Email Address</label>
-                    <input type="email" name="email" id="signup-email" class="glass-input" placeholder="Enter your email" required>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Email Address</label>
+                    <input type="email" name="email"
+                        class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600"
+                        placeholder="name@example.com" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" name="password" id="signup-password" class="glass-input" placeholder="Create a password" required>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Password</label>
+                    <input type="password" name="password"
+                        class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600"
+                        placeholder="Create a strong password" required>
                 </div>
 
-                <button type="submit" class="glass-button">
-                    <i class="fas fa-user-plus"></i> Sign Up
+                <button type="submit"
+                    class="w-full py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5">
+                    Create Account
                 </button>
-
-                <div class="divider">
-                    <span>OR</span>
-                </div>
-
-                <a href="{% url 'google_login' %}" class="google-login-btn">
-                    <i class="fab fa-google text-lg"></i>
-                    <span>Continue with Google</span>
-                </a>
             </form>
+
+            <!-- Divider -->
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-white/5"></div>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase"><span
+                        class="bg-[#0e121b] px-3 text-gray-500">Or continue with</span></div>
+            </div>
+
+            <!-- Google Login -->
+            <a href="{% url 'google_login' %}"
+                class="flex items-center justify-center gap-3 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white text-sm font-medium transition-all group">
+                <i class="fab fa-google text-gray-400 group-hover:text-white transition-colors"></i>
+                Google
+            </a>
         </div>
     </div>
 
     <!-- Forgot Password Modal -->
-    <div id="forgot-password-popup" class="modal-overlay hidden">
-        <div class="modal-content" id="forgot-password-modal-content">
-            <h3 class="modal-title">Reset Password</h3>
-            <form id="forgot-password-form" method="POST" action="">
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm p-6 rounded-2xl animate__animated animate__zoomIn">
+            <h3 class="font-display text-xl font-bold mb-2">Reset Password</h3>
+            <p class="text-sm text-gray-400 mb-6">Enter your email to receive reset instructions.</p>
+
+            <form method="POST" action="">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label for="reset-email">Email Address</label>
-                    <input type="email" name="email" id="reset-email" class="glass-input" placeholder="Enter your email" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="cancel-forgot-password" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-submit">Send Reset Link</button>
+                <input type="email" name="email"
+                    class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600 mb-4"
+                    placeholder="name@example.com" required>
+
+                <div class="flex gap-3">
+                    <button type="button" id="close-modal"
+                        class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-300 font-medium transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-500 rounded-lg text-sm text-white font-medium transition-colors">Send
+                        Link</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
-    <script src="{% static 'health_assistant/js/script.js' %}"></script>
     <script>
-        // Particle animation
-        const canvas = document.getElementById('particles-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const particleCount = 80;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.radius = Math.random() * 2 + 1;
-                this.color = Math.random() > 0.5 ? 'rgba(58, 175, 169, 0.3)' : 'rgba(74, 144, 226, 0.3)';
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(particle => {
-                particle.update();
-                particle.draw();
-            });
-            requestAnimationFrame(animateParticles);
-        }
-
-        animateParticles();
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // Tab switching
+        // Tab Logic
         const loginTab = document.getElementById('login-tab');
         const signupTab = document.getElementById('signup-tab');
         const loginForm = document.getElementById('login-form');
         const signupForm = document.getElementById('signup-form');
 
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('active');
-            signupTab.classList.remove('active');
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-        });
+        function switchTab(tab) {
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
 
-        signupTab.addEventListener('click', () => {
-            signupTab.classList.add('active');
-            loginTab.classList.remove('active');
-            signupForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-        });
+        loginTab.addEventListener('click', () => switchTab('login'));
+        signupTab.addEventListener('click', () => switchTab('signup'));
 
-        // Forgot password modal
-        const modal = document.getElementById('forgot-password-popup');
-        const forgotLink = document.getElementById('forgot-password');
-        const cancelBtn = document.getElementById('cancel-forgot-password');
-        const modalContent = document.getElementById('forgot-password-modal-content');
+        // Modal Logic
+        const modal = document.getElementById('modal-overlay');
+        const forgotBtn = document.getElementById('forgot-password');
+        const closeBtn = document.getElementById('close-modal');
 
-        forgotLink.addEventListener('click', (e) => {
+        forgotBtn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.add('show');
-            }, 10);
         });
 
-        cancelBtn.addEventListener('click', () => {
-            modalContent.classList.remove('show');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
         });
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modalContent.classList.remove('show');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-            }
+            if (e.target === modal) modal.classList.add('hidden');
         });
     </script>
 </body>
+
 </html>

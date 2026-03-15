@@ -11,11 +11,6 @@ SECRET_KEY = 'django-insecure-u8ywwz9jn)m+vcpg#3w42_wv1s7r+a%ju5_)2efpm$mohc8snf
 DEBUG = True
 ALLOWED_HOSTS = []
 
-# settings.py (add at the bottom)
-# settings.py (replace the old TWILIO stuff at the bottom)
-TWILIO_ACCOUNT_SID = 'ACb1f4150e01a55f00afb992b1bc3d32b1'
-TWILIO_AUTH_TOKEN = 'b744b36338f8e1523254125f6c05ea82'
-TWILIO_VERIFY_SERVICE_SID = 'VAabeced161c75913087a58e434bfbaafb'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -27,7 +22,9 @@ INSTALLED_APPS = [
     'accounts',
     'chat',
     'sim',
+    'community',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

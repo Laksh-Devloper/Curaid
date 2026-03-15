@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 import PyPDF2  # Add to requirements: PyPDF2
 from PIL import Image
 import pytesseract  # For OCR on images
@@ -21,15 +23,18 @@ from .models import ChatMessage, UserTodo ,ChatSession
 DIABETES_MODEL = pickle.load(open('case_companion/diabetes_model.sav', 'rb'))
 HEART_MODEL = pickle.load(open('case_companion/heart_model.sav', 'rb'))
 
+from dotenv import dotenv
+loaddotenv()
+
 # Configure Gemini API
-GEMINI_API_KEY = "AIzaSyCAEr7ehPoD8QTiKqpwcvCvdCvTjdssQ0c"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 
 
 
 GEMINI_MODEL = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
+    model_name="gemini-2.5-flash",
     generation_config={
         "temperature": 1,
         "top_p": 0.95,
@@ -271,6 +276,178 @@ def health_dashboard_view(request):
     }
         
     return render(request, 'health_dashboard.html', context)
+
+@csrf_exempt
+@login_required
+def email_health_report(request):
+    """Sends the health report to user's registered email"""
+    if request.method == 'POST':
+        try:
+            dashboard_data = request.session.get('health_dashboard_data')
+            
+            if not dashboard_data:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No health report data found. Please generate a report first.'
+                }, status=400)
+            
+            user = request.user
+            user_email = user.email
+            
+            if not user_email:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No email address found for your account.'
+                }, status=400)
+            
+            scores_data = dashboard_data['scores']
+            
+            # Prepare email context
+            email_context = {
+                'user_name': user.username or user.first_name or 'User',
+                'user_data': dashboard_data['user_data'],
+                'scores': scores_data,
+                'recommendations': dashboard_data['recommendations'],
+                'generated_at': dashboard_data['generated_at'],
+                'overall_score': scores_data['overall_score'],
+                'fitness_score': scores_data['metrics']['fitness'],
+                'nutrition_score': scores_data['metrics']['nutrition'],
+                'lifestyle_score': scores_data['metrics']['lifestyle'],
+                'risk_factors_score': scores_data['metrics']['risk_factors'],
+                'bmi_value': scores_data['bmi'],
+                'current_date': datetime.now().strftime('%B %d, %Y')
+            }
+            
+            # Create HTML email content
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }}
+                    .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                    .header {{ background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 30px; text-align: center; }}
+                    .header h1 {{ margin: 0; font-size: 28px; }}
+                    .content {{ padding: 30px; }}
+                    .score-section {{ text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; margin: 20px 0; }}
+                    .score-value {{ font-size: 48px; font-weight: bold; color: #8b5cf6; margin: 10px 0; }}
+                    .metric-row {{ display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #e5e7eb; }}
+                    .metric-name {{ font-weight: 600; color: #374151; }}
+                    .metric-value {{ color: #8b5cf6; font-weight: bold; }}
+                    .section {{ margin: 25px 0; }}
+                    .section-title {{ font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 15px; border-left: 4px solid #8b5cf6; padding-left: 10px; }}
+                    .habit-item {{ padding: 12px; background: #f0fdf4; border-left: 3px solid #10b981; margin: 8px 0; border-radius: 5px; }}
+                    .improvement-item {{ padding: 12px; background: #fef3c7; border-left: 3px solid #f59e0b; margin: 8px 0; border-radius: 5px; }}
+                    .recommendation {{ padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 10px 0; }}
+                    .recommendation-title {{ font-weight: bold; color: #1f2937; margin-bottom: 5px; }}
+                    .priority-high {{ color: #dc2626; }}
+                    .priority-medium {{ color: #f59e0b; }}
+                    .priority-low {{ color: #10b981; }}
+                    .footer {{ background: #f8f9fa; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🏥 Your Health Report</h1>
+                        <p>Generated by CurAid</p>
+                    </div>
+                    
+                    <div class="content">
+                        <p>Hello {email_context['user_name']},</p>
+                        <p>Here's your comprehensive health assessment based on your recent data.</p>
+                        
+                        <div class="score-section">
+                            <h2 style="margin: 0; color: #6b7280;">Overall Wellness Score</h2>
+                            <div class="score-value">{email_context['overall_score']}/100</div>
+                            <p style="color: #6b7280; margin: 5px 0;">
+                                {'Excellent condition!' if email_context['overall_score'] >= 80 else 'Good progress!' if email_context['overall_score'] >= 60 else 'Focus on improvements'}
+                            </p>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-title">Health Metrics</div>
+                            <div class="metric-row">
+                                <span class="metric-name">💪 Fitness</span>
+                                <span class="metric-value">{email_context['fitness_score']}%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">🥗 Nutrition</span>
+                                <span class="metric-value">{email_context['nutrition_score']}%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">🌙 Lifestyle</span>
+                                <span class="metric-value">{email_context['lifestyle_score']}%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">🛡️ Risk Factors</span>
+                                <span class="metric-value">{email_context['risk_factors_score']}%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">📊 BMI</span>
+                                <span class="metric-value">{email_context['bmi_value']}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-title">✅ Your Strengths</div>
+                            {''.join([f'<div class="habit-item">{habit}</div>' for habit in scores_data['positive_habits']])}
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-title">⚡ Focus Areas</div>
+                            {''.join([f'<div class="improvement-item">{area}</div>' for area in scores_data['improvement_areas']])}
+                        </div>
+                        
+                        <div class="section">
+                            <div class="section-title">📋 Action Plan</div>
+                            {''.join([f'''
+                            <div class="recommendation">
+                                <div class="recommendation-title">
+                                    <span class="priority-{rec['priority']}">[{rec['priority'].upper()} PRIORITY]</span> {rec['title']}
+                                </div>
+                                <p style="margin: 5px 0 0 0; color: #6b7280;">{rec['description']}</p>
+                            </div>
+                            ''' for rec in dashboard_data['recommendations']])}
+                        </div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p><strong>CurAid</strong> - Your AI Health Companion</p>
+                        <p>Report generated on {email_context['current_date']}</p>
+                        <p style="font-size: 12px; margin-top: 10px;">This report is for informational purposes only. Always consult with healthcare professionals for medical advice.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create and send email
+            subject = f'Your CurAid Health Report - {email_context["current_date"]}'
+            from_email = 'CurAid Health Assistant <casecompanion07@gmail.com>'
+            to_email = [user_email]
+            
+            email = EmailMultiAlternatives(subject, 'Please view this email in an HTML-compatible email client.', from_email, to_email)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Health report sent to {user_email}'
+            })
+            
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Failed to send email: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method.'
+    }, status=405)
+
 
 def _generate_ai_content(prompt: str) -> str:
     """Handles interaction with the Gemini model and returns stripped text."""
@@ -576,12 +753,18 @@ def chat_room(request):
         current_session.updated_at = datetime.now()
         current_session.save()
 
+        # CRITICAL FIX: Reload chat history AFTER saving the new message
+        chat_history_list = list(ChatMessage.objects.filter(
+            user=request.user,
+            session=current_session
+        ).order_by('timestamp').values('message', 'bot_response', 'timestamp'))
+
         # For AJAX requests, return JSON with updated todos
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             todos_data = _serialize_todos_for_json(request.user)
             return JsonResponse({'bot_response': bot_response, 'todos': todos_data})
 
-        # For full page reloads, re-render the template
+        # For full page reloads, re-render the template with UPDATED chat history
         active_todos_json_for_template = json.dumps(_serialize_todos_for_json(request.user))
         chat_sessions = ChatSession.objects.filter(user=request.user)
         return render(request, 'chat.html', {
@@ -802,24 +985,19 @@ def landing_view(request):
         return redirect('login')
     return render(request, 'landing.html')
 
+@login_required
+@csrf_exempt
 def mark_todo_done(request, todo_id):
-    # Your existing logic to mark todo as done
+    """Toggle completion status of a todo."""
     if request.method == 'POST':
         try:
-            # Get the Todo item
-            todo = UserTodo.objects.get(id=todo_id)
-            # Parse the JSON body
-            import json
+            todo = UserTodo.objects.get(id=todo_id, user=request.user)
             data = json.loads(request.body)
-            completed_status = data.get('completed')
-
-            # Update the todo status
+            completed_status = data.get('completed', True)
             todo.completed = completed_status
+            todo.completed_at = datetime.now() if completed_status else None
             todo.save()
-
-            # Return all todos
-            todos = list(UserTodo.objects.values()) # Get all todos, including the updated one
-            return JsonResponse({'todos': todos})
+            return JsonResponse({'status': 'ok', 'todos': _serialize_todos_for_json(request.user)})
         except UserTodo.DoesNotExist:
             return JsonResponse({'error': 'Todo not found'}, status=404)
         except Exception as e:
@@ -827,13 +1005,66 @@ def mark_todo_done(request, todo_id):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+@login_required
+@csrf_exempt
 def clear_completed_todos(request):
-    # Your existing logic to clear completed todos
+    """Delete all completed todos for the logged-in user."""
     if request.method == 'POST':
         try:
-            UserTodo.objects.filter(completed=True).delete()
-            todos = list(UserTodo.objects.values()) # Get remaining todos
-            return JsonResponse({'todos': todos})
+            UserTodo.objects.filter(user=request.user, completed=True).delete()
+            return JsonResponse({'status': 'ok', 'todos': _serialize_todos_for_json(request.user)})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+def get_todos(request):
+    """Return the current user's todos as JSON."""
+    return JsonResponse({'todos': _serialize_todos_for_json(request.user)})
+
+
+@login_required
+@csrf_exempt
+def add_todo(request):
+    """Add a new todo for the current user."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task = data.get('task_description', '').strip()
+            due_date_str = data.get('due_date', None)
+            if not task:
+                return JsonResponse({'error': 'Task description is required.'}, status=400)
+            due_date = None
+            if due_date_str:
+                try:
+                    from datetime import date as date_type
+                    due_date = date_type.fromisoformat(due_date_str)
+                except ValueError:
+                    pass
+            UserTodo.objects.create(
+                user=request.user,
+                task_description=task,
+                suggested_by_curo=False,
+                due_date=due_date,
+            )
+            return JsonResponse({'status': 'ok', 'todos': _serialize_todos_for_json(request.user)})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@csrf_exempt
+def delete_todo(request, todo_id):
+    """Permanently delete a todo for the current user."""
+    if request.method == 'POST':
+        try:
+            todo = UserTodo.objects.get(id=todo_id, user=request.user)
+            todo.delete()
+            return JsonResponse({'status': 'ok', 'todos': _serialize_todos_for_json(request.user)})
+        except UserTodo.DoesNotExist:
+            return JsonResponse({'error': 'Todo not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -853,15 +1084,9 @@ def load_chat_session(request, session_id):
         session = ChatSession.objects.get(session_id=session_id, user=request.user)
         request.session['current_chat_session_id'] = str(session.session_id)
         
-        messages = ChatMessage.objects.filter(session=session).order_by('timestamp').values(
-            'message', 'bot_response', 'timestamp'
-        )
-        
-        return JsonResponse({
-            'status': 'success',
-            'messages': list(messages),
-            'session_title': session.title
-        })
+        # Redirect to chat room which will load the session's messages
+        return redirect('chat_room')
     except ChatSession.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Session not found'}, status=404)
+
 

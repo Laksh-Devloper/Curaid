@@ -1,0 +1,50 @@
+{% load avatar_tags %}
+<!-- 3D Avatar Component -->
+<div class="avatar-3d" style="
+    width: {{ size|default:'50' }}px;
+    height: {{ size|default:'50' }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, {{ user.username|avatar_color }} 0%, {{ user.username|avatar_color }}dd 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+">
+    <img src="{% avatar_3d_url user size|default:'100' %}" alt="{{ user.username }}'s avatar" style="
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        " onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <!-- Fallback to initials if image fails -->
+    <div style="
+        display: none;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: {{ size|default:'50'|floatformat:0|add:'-20' }}px;
+    ">
+        {{ user.username|initials }}
+    </div>
+</div>
+
+<style>
+    .avatar-3d:hover {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .avatar-3d img {
+        transition: transform 0.3s ease;
+    }
+
+    .avatar-3d:hover img {
+        transform: scale(1.05);
+    }
+</style>

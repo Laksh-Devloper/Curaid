@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Health Companion Forum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'health_assistant/css/dark-mode.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .search-header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-query {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .results-count {
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        .topic-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-secondary);
+        }
+
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .topic-title a:hover {
+            color: var(--accent-primary);
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-excerpt {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .btn:hover {
+            background: var(--button-hover);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="search-header">
+            <h1><i class="fas fa-search"></i> Search Results</h1>
+            <p>Showing results for: <span class="search-query">"{{ query }}"</span></p>
+            <p class="results-count">Found {{ topics.count }} topic(s)</p>
+        </div>
+
+        {% if topics %}
+        {% for topic in topics %}
+        <div class="topic-item">
+            <div class="topic-title">
+                <a href="{% url 'topic_view' topic.id %}">{{ topic.title }}</a>
+            </div>
+            <div class="topic-meta">
+                <span class="category-badge">{{ topic.category.name }}</span>
+                <span><i class="fas fa-user"></i> {{ topic.author.username }}</span>
+                <span><i class="fas fa-clock"></i> {{ topic.created_at|timesince }} ago</span>
+                <span><i class="fas fa-comments"></i> {{ topic.reply_count }} replies</span>
+                <span><i class="fas fa-eye"></i> {{ topic.views }} views</span>
+            </div>
+            <div class="topic-excerpt">
+                {{ topic.content|truncatewords:30 }}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No results found</h3>
+            <p>Try different keywords or browse categories</p>
+            <a href="{% url 'forum_home' %}" class="btn" style="margin-top: 1rem;">
+                <i class="fas fa-home"></i> Back to Forum
+            </a>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'forum_home' %}" class="btn">
+                <i class="fas fa-arrow-left"></i> Back to Forum
+            </a>
+        </div>
+    </div>
+
+    <script src="{% static 'health_assistant/js/theme-toggle.js' %}"></script>
+</body>
+
+</html>

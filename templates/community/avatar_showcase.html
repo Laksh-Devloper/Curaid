@@ -1,0 +1,209 @@
+{% load static %}
+{% load avatar_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Avatar Showcase - Health Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'health_assistant/css/dark-mode.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #4A90E2, #3AAFA9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .avatar-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-display {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .avatar-display:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .avatar-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .avatar-style {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .color-box {
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎨 3D Avatar Showcase</h1>
+
+        <h2 style="margin-bottom: 1.5rem;">Avatar Styles</h2>
+        <div class="avatar-grid">
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'adventurer' 120 %}" alt="Adventurer">
+                </div>
+                <div class="avatar-name">Adventurer</div>
+                <div class="avatar-style">3D Character</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'avataaars' 120 %}" alt="Avataaars">
+                </div>
+                <div class="avatar-name">Avataaars</div>
+                <div class="avatar-style">3D Cartoon</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'big-ears' 120 %}" alt="Big Ears">
+                </div>
+                <div class="avatar-name">Big Ears</div>
+                <div class="avatar-style">Cute 3D</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'bottts' 120 %}" alt="Bottts">
+                </div>
+                <div class="avatar-name">Bottts</div>
+                <div class="avatar-style">3D Robots</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'lorelei' 120 %}" alt="Lorelei">
+                </div>
+                <div class="avatar-name">Lorelei</div>
+                <div class="avatar-style">3D Illustrated</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'micah' 120 %}" alt="Micah">
+                </div>
+                <div class="avatar-name">Micah</div>
+                <div class="avatar-style">3D Minimal</div>
+            </div>
+
+            <div class="avatar-card">
+                <div class="avatar-display" style="background: {{ user.username|avatar_color }};">
+                    <img src="{% avatar_url user 'personas' 120 %}" alt="Personas">
+                </div>
+                <div class="avatar-name">Personas</div>
+                <div class="avatar-style">3D People</div>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 1.5rem; margin-top: 3rem;">Color Palette</h2>
+        <div class="color-palette">
+            <div class="color-box" style="background: #FF6B6B;">#FF6B6B</div>
+            <div class="color-box" style="background: #4ECDC4;">#4ECDC4</div>
+            <div class="color-box" style="background: #45B7D1;">#45B7D1</div>
+            <div class="color-box" style="background: #FFA07A;">#FFA07A</div>
+            <div class="color-box" style="background: #98D8C8;">#98D8C8</div>
+            <div class="color-box" style="background: #F7DC6F;">#F7DC6F</div>
+            <div class="color-box" style="background: #BB8FCE;">#BB8FCE</div>
+            <div class="color-box" style="background: #85C1E2;">#85C1E2</div>
+            <div class="color-box" style="background: #F8B739;">#F8B739</div>
+            <div class="color-box" style="background: #52B788;">#52B788</div>
+            <div class="color-box" style="background: #E63946;">#E63946</div>
+            <div class="color-box" style="background: #457B9D;">#457B9D</div>
+            <div class="color-box" style="background: #F77F00;">#F77F00</div>
+            <div class="color-box" style="background: #06FFA5;">#06FFA5</div>
+            <div class="color-box" style="background: #8338EC;">#8338EC</div>
+        </div>
+
+        <div
+            style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 12px;">
+            <h3 style="margin-bottom: 1rem;">Your Avatar</h3>
+            <div class="avatar-display" style="background: {{ user.username|avatar_color }}; margin: 0 auto;">
+                <img src="{% avatar_3d_url user 120 %}" alt="{{ user.username }}">
+            </div>
+            <p style="margin-top: 1rem; font-weight: 600;">{{ user.username }}</p>
+            <p style="color: var(--text-tertiary); font-size: 0.9rem;">Initials: {{ user.username|initials }}</p>
+            <p style="color: var(--text-tertiary); font-size: 0.9rem;">Color: {{ user.username|avatar_color }}</p>
+        </div>
+    </div>
+
+    <script src="{% static 'health_assistant/js/theme-toggle.js' %}"></script>
+</body>
+
+</html>
