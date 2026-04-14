@@ -1,4 +1,5 @@
 import json
+import os
 import pickle
 from datetime import date, datetime, timedelta
 import requests
@@ -23,15 +24,14 @@ from .models import ChatMessage, UserTodo ,ChatSession
 DIABETES_MODEL = pickle.load(open('case_companion/diabetes_model.sav', 'rb'))
 HEART_MODEL = pickle.load(open('case_companion/heart_model.sav', 'rb'))
 
-from dotenv import dotenv
-loaddotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 # Configure Gemini API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY is not set. Please add it to your .env file.")
 genai.configure(api_key=GEMINI_API_KEY)
-
-
-
 
 GEMINI_MODEL = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
