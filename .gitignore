@@ -1,1 +1,4 @@
-chat/.env
+# Environments
+.env
+.env.*
+*.env
