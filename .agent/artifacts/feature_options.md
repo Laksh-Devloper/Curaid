@@ -1,4 +1,4 @@
-# 🎯 Curaid Feature Options - Choose Your Path
+# 🎯 Cura Sphere Feature Options - Choose Your Path
 
 ## 📊 Current State Analysis
 
@@ -201,11 +201,11 @@
 ---
 
 ### C2: Voice-Enabled Health Assistant 🎤
-**What it does:** Talk to Curaid instead of typing
+**What it does:** Talk to Cura Sphere instead of typing
 
 **Features:**
 - 🎤 **Voice Input**: Speak your health questions
-- 🔊 **Voice Responses**: Curaid talks back
+- 🔊 **Voice Responses**: Cura Sphere talks back
 - 🌐 **Multi-Language**: Support Hindi, Spanish, etc.
 - 🚗 **Hands-Free Mode**: Use while driving/exercising
 - 📝 **Auto-Transcription**: Save voice notes as text
@@ -332,7 +332,7 @@
 ---
 
 ### E2: API & Developer Platform 🔌
-**What it does:** Let others build on Curaid
+**What it does:** Let others build on Cura Sphere
 
 **Features:**
 - 🔑 **API Keys**: Generate keys for developers
@@ -353,7 +353,7 @@
 ---
 
 ### E3: Multi-Tenant SaaS Platform 🏢
-**What it does:** White-label Curaid for hospitals/clinics
+**What it does:** White-label Cura Sphere for hospitals/clinics
 
 **Features:**
 - 🏥 **Custom Branding**: Each clinic gets their own branded version

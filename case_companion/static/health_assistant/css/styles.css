@@ -279,55 +279,13 @@ body {
 .glass-box label {
     color: #080808;
 }
-.glass-box a#forgot-password {
-    color: #f4f4f7;
-    font-size: 0.875rem;
-    display: block;
-    margin-top: 0.5rem;
-    text-align: right;
-}
-.glass-box a#forgot-password:hover {
-    text-decoration: underline;
-}
+
 #login-tab,
 #signup-tab {
     margin: 0 1rem;
     cursor: pointer;
 }
 
-/* Forgot Password Popup */
-#forgot-password-popup .bg-white {
-    background: linear-gradient(
-        135deg,
-        #DCEEFF
-    );
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    padding: 2.5rem;
-    color: white;
-}
-#forgot-password-popup label {
-    color: #0b0b0b;
-}
-#forgot-password-popup input {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-}
-#forgot-password-popup input::placeholder {
-    color: rgba(255,255,255,0.7);
-}
-#forgot-password-popup button {
-    background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
-    color: rgb(20, 19, 19);
-}
-#forgot-password-popup button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
 
 /* Save Chat Popup */
 #save-chat-popup .bg-white {

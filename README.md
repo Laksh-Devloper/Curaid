@@ -1,10 +1,10 @@
-# CURO
+# CURA SPHERE
 
 > Minimal chaos. Maximum control.
 
 ## Overview
 
-**CURO** is a structured, modular system designed to organize workflows, reduce mental load, and automate repetitive logic. It’s built with clarity first and scalability in mind.
+**CURA SPHERE** is a structured, modular system designed to organize workflows, reduce mental load, and automate repetitive logic. It’s built with clarity first and scalability in mind.
 
 The goal is simple: fewer manual decisions, cleaner systems, better outcomes.
 
@@ -33,8 +33,8 @@ The goal is simple: fewer manual decisions, cleaner systems, better outcomes.
 ### Installation
 
 ```bash
-git clone https://github.com/Laksh-Devloper/Curaid/tree/main
-cd Curaid
+git clone https://github.com/Laksh-Devloper/Cura Sphere/tree/main
+cd Cura Sphere
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -49,7 +49,7 @@ python manage.py runserver
 ## Project Structure
 
 ```
-curo/
+cura-sphere/
 │── core/
 │── api/
 │── templates/
@@ -84,14 +84,14 @@ MIT License.
 
 Built with discipline, curiosity, and a refusal to accept messy systems.
 
-# 🏥 Curaid - AI-Powered Health Companion
+# 🏥 Cura Sphere - AI-Powered Cura Sphere
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Django](https://img.shields.io/badge/Django-4.x-green.svg)
 ![Python](https://img.shields.io/badge/Python-3.8+-yellow.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-**Curaid** is an intelligent health companion application that leverages AI to provide personalized health insights, disease risk predictions, mental health support, and comprehensive wellness tracking. Built with Django and powered by Google's Gemini AI, Curaid helps users take control of their health journey.
+**Cura Sphere** is an intelligent health companion application that leverages AI to provide personalized health insights, disease risk predictions, mental health support, and comprehensive wellness tracking. Built with Django and powered by Google's Gemini AI, Cura Sphere helps users take control of their health journey.
 
 ---
 
@@ -148,7 +148,7 @@ Built with discipline, curiosity, and a refusal to accept messy systems.
 - **Actionable Insights**: Health metrics assessment and recommendations
 
 ### ✅ Smart To-Do Management
-- **AI-Suggested Tasks**: Curaid recommends health activities based on conversations
+- **AI-Suggested Tasks**: Cura Sphere recommends health activities based on conversations
 - **Due Date Tracking**: Set and monitor task deadlines
 - **Status Management**: Mark tasks as complete or pending
 - **Integrated Workflow**: Seamlessly manage health goals within chat interface
@@ -252,7 +252,7 @@ Curo Tweaks/
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/curaid.git
+git clone https://github.com/yourusername/cura-sphere.git
 cd "Curo Tweaks"
 ```
 
@@ -610,7 +610,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions, suggestions, or support:
 - Email: casecompanion07@gmail.com
-- GitHub Issues: [Create an issue](https://github.com/Laksh-Devloper/Curaid/issues)
+- GitHub Issues: [Create an issue](https://github.com/Laksh-Devloper/Cura Sphere/issues)
 
 ---
 

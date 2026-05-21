@@ -124,7 +124,7 @@ class Command(BaseCommand):
         }
 
         # Get bot users
-        bot_users = list(User.objects.filter(email__contains='curaid-bot.com'))
+        bot_users = list(User.objects.filter(email__contains='cura-sphere-bot.com'))
         
         if not bot_users:
             self.stdout.write(self.style.ERROR('No bot users found! Run: python manage.py create_forum_bots'))

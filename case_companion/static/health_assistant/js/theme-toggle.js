@@ -4,13 +4,13 @@
 
     // Get theme from localStorage or default to dark
     const getTheme = () => {
-        return localStorage.getItem('curaid-theme') || 'dark';
+        return localStorage.getItem('cura-sphere-theme') || 'dark';
     };
 
     // Set theme
     const setTheme = (theme) => {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('curaid-theme', theme);
+        localStorage.setItem('cura-sphere-theme', theme);
         updateThemeIcon(theme);
     };
 

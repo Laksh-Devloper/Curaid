@@ -11,4 +11,7 @@ urlpatterns = [
     path('auth-google/', views.AuthGoogle.as_view(), name='auth_google'),
     path('profile/', views.profile_view, name='profile'),
     path('auth-receiver/', views.auth_receiver, name='auth_receiver'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/edit-email/', views.edit_email, name='edit_email'),
+    path('profile/change-password/', views.change_password, name='change_password'),
 ]

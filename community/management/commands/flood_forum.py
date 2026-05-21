@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Floods the forum with unique, sarcastic, adult-friendly health content'
 
     def handle(self, *args, **options):
-        bot_users = list(User.objects.filter(email__contains='curaid-bot.com'))
+        bot_users = list(User.objects.filter(email__contains='cura-sphere-bot.com'))
         if not bot_users:
             self.stdout.write(self.style.ERROR('No bots! Run: python manage.py create_forum_bots'))
             return

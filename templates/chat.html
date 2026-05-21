@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Companion</title>
+    <title>Cura Sphere</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link
@@ -1112,7 +1112,7 @@
             </div>
             <div>
                 <div class="font-display font-bold text-[15px] text-white leading-tight">
-                    Health<span class="text-brand-400">Companion</span>
+                    Cura<span class="text-brand-400">Sphere</span>
                 </div>
                 <div class="text-[10px] text-slate-600 font-medium">AI Health Assistant</div>
             </div>
@@ -1216,9 +1216,9 @@
                     <div class="sidebar-logo-badge w-7 h-7 rounded-lg">
                         <i class="fas fa-heart-pulse text-white text-[10px]"></i>
                     </div>
-                    <span class="font-display font-semibold text-sm text-white">Health Companion</span>
+                    <span class="font-display font-semibold text-sm text-white">Cura Sphere</span>
                 </div>
-                <span class="md:hidden font-display font-bold text-white text-sm">Health Companion</span>
+                <span class="md:hidden font-display font-bold text-white text-sm">Cura Sphere</span>
             </div>
 
             <!-- Right: Status badge -->
@@ -1253,7 +1253,7 @@
                     <i class="fas fa-robot text-[11px]"></i>
                 </div>
                 <div class="flex flex-col gap-1 max-w-[80%] md:max-w-[70%]">
-                    <div class="text-[10.5px] text-slate-600 font-medium ml-1">Health Companion · AI</div>
+                    <div class="text-[10.5px] text-slate-600 font-medium ml-1">Cura Sphere · AI</div>
                     <div class="bubble-bot px-4 py-3 text-[13.5px] bot-bubble-content">
                         <div class="bot-md">{{ message.bot_response }}</div>
                         <span class="bot-timestamp">{{ message.timestamp|date:"H:i" }}</span>
@@ -1348,14 +1348,14 @@
                     <input type="hidden" name="disease-type" id="hidden-disease-type" value="{{ disease_type }}">
                 </div>
 
-                <!-- Example Input -->
-                <div id="example-input" class="example-box hidden">
-                    <div class="text-[11.5px] text-slate-600 font-mono truncate flex-1">
-                        <span class="text-slate-700 mr-2">Try →</span>
-                        <span id="example-text" class="text-brand-400/80"></span>
+                <!-- Disease Parameter Trigger (Replaces inline grid) -->
+                <div id="disease-params-trigger" class="hidden mb-3 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50 example-box flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-[12.5px] font-semibold text-slate-200">Predict Disease Risk</span>
+                        <span class="text-[11px] text-slate-400">Fill out the medical parameters form to get an AI analysis.</span>
                     </div>
-                    <button type="button" id="use-example-btn" class="use-example-btn">
-                        Use This
+                    <button type="button" id="open-disease-modal-btn" class="use-example-btn bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-lg text-[11.5px] font-medium transition-colors">
+                        Open Form
                     </button>
                 </div>
 
@@ -1373,7 +1373,7 @@
 
                     <!-- Text Input -->
                     <input type="text" id="chat_input" name="message" class="chat-input"
-                        placeholder="Ask me anything about your health…" required autocomplete="off">
+                        placeholder="Ask me anything about your health…" autocomplete="off">
 
                     <!-- Bottom actions -->
                     <div class="input-actions">
@@ -1395,7 +1395,7 @@
 
                 <!-- Disclaimer -->
                 <p class="text-center text-[10.5px] text-slate-700 mt-2.5">
-                    Health Companion provides informational guidance only — not medical advice.
+                    Cura Sphere provides informational guidance only — not medical advice.
                 </p>
             </form>
         </div>
@@ -1531,6 +1531,198 @@
         </div>
     </div>
 
+    <!-- ════════════ DIABETES MODAL ════════════ -->
+    <div id="diabetes-modal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-card">
+            <button
+                class="close-button absolute top-4 right-4 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all flex items-center justify-center">
+                <i class="fas fa-times text-[11px]"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-brand-600/20 flex items-center justify-center">
+                    <i class="fas fa-tint text-indigo-400 text-sm"></i>
+                </div>
+                <div>
+                    <h2 class="font-display text-[17px] font-bold text-white">Diabetes Parameters</h2>
+                    <p class="text-[11px] text-slate-600">Fill in your details to predict risk</p>
+                </div>
+            </div>
+
+            <form id="diabetes-form" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="modal-label">Age</label>
+                        <input type="number" id="param-age-diab" class="modal-input" placeholder="e.g. 45" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">BMI</label>
+                        <input type="number" step="any" id="param-bmi" class="modal-input" placeholder="e.g. 25.4" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="modal-label">Pregnancies</label>
+                        <input type="number" id="param-pregnancies" class="modal-input" placeholder="e.g. 0" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Glucose</label>
+                        <input type="number" step="any" id="param-glucose" class="modal-input" placeholder="e.g. 120" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="modal-label">Blood Pressure</label>
+                        <input type="number" step="any" id="param-blood_pressure" class="modal-input" placeholder="e.g. 80" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Skin Thickness</label>
+                        <input type="number" step="any" id="param-skin_thickness" class="modal-input" placeholder="e.g. 20" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="modal-label">Insulin</label>
+                        <input type="number" step="any" id="param-insulin" class="modal-input" placeholder="e.g. 85" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Pedigree Function</label>
+                        <input type="number" step="any" id="param-diabetes_pedigree_function" class="modal-input" placeholder="e.g. 0.5" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-submit-btn mt-2 bg-brand-600 hover:bg-brand-500">
+                    Predict Diabetes Risk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ════════════ HEART DISEASE MODAL ════════════ -->
+    <div id="heart-modal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-card max-w-lg">
+            <button
+                class="close-button absolute top-4 right-4 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all flex items-center justify-center">
+                <i class="fas fa-times text-[11px]"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-brand-600/20 flex items-center justify-center">
+                    <i class="fas fa-heart text-rose-400 text-sm"></i>
+                </div>
+                <div>
+                    <h2 class="font-display text-[17px] font-bold text-white">Heart Parameters</h2>
+                    <p class="text-[11px] text-slate-600">Fill in your details to predict risk</p>
+                </div>
+            </div>
+
+            <form id="heart-form" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="modal-label">Age</label>
+                        <input type="number" id="param-age-heart" class="modal-input" placeholder="e.g. 50" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Sex</label>
+                        <select id="param-sex" class="modal-input" required>
+                            <option value="1" class="bg-slate-900">Male</option>
+                            <option value="0" class="bg-slate-900">Female</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="modal-label">Chest Pain</label>
+                        <select id="param-cp" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">Type 0</option>
+                            <option value="1" class="bg-slate-900">Type 1</option>
+                            <option value="2" class="bg-slate-900">Type 2</option>
+                            <option value="3" class="bg-slate-900">Type 3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="modal-label">Resting BP</label>
+                        <input type="number" id="param-trestbps" class="modal-input" placeholder="e.g. 120" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Cholesterol</label>
+                        <input type="number" id="param-chol" class="modal-input" placeholder="e.g. 200" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">FBS > 120</label>
+                        <select id="param-fbs" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">No</option>
+                            <option value="1" class="bg-slate-900">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="modal-label">Rest ECG</label>
+                        <select id="param-restecg" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">Type 0</option>
+                            <option value="1" class="bg-slate-900">Type 1</option>
+                            <option value="2" class="bg-slate-900">Type 2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="modal-label">Max Heart Rate</label>
+                        <input type="number" id="param-thalach" class="modal-input" placeholder="e.g. 150" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Ex. Angina</label>
+                        <select id="param-exang" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">No</option>
+                            <option value="1" class="bg-slate-900">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="modal-label">Oldpeak</label>
+                        <input type="number" step="any" id="param-oldpeak" class="modal-input" placeholder="e.g. 1.0" required>
+                    </div>
+                    <div>
+                        <label class="modal-label">Slope</label>
+                        <select id="param-slope" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">0</option>
+                            <option value="1" class="bg-slate-900">1</option>
+                            <option value="2" class="bg-slate-900">2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="modal-label">Vessels (0-4)</label>
+                        <input type="number" id="param-ca" class="modal-input" placeholder="e.g. 0" min="0" max="4" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <div>
+                        <label class="modal-label">Thalassemia (0-3)</label>
+                        <select id="param-thal" class="modal-input" required>
+                            <option value="0" class="bg-slate-900">0</option>
+                            <option value="1" class="bg-slate-900">1</option>
+                            <option value="2" class="bg-slate-900">2</option>
+                            <option value="3" class="bg-slate-900">3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-submit-btn mt-2 bg-brand-600 hover:bg-brand-500">
+                    Predict Heart Risk
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- ════════════ SCRIPTS ════════════ -->
     <script>
         // ── Markdown → HTML parser ──
@@ -1627,7 +1819,9 @@
             const liveNodes = [];
             const liveWalker = document.createTreeWalker(targetEl, NodeFilter.SHOW_TEXT);
             while ((node = liveWalker.nextNode())) {
-                liveNodes.push(node);
+                if (node.textContent.trim() || node.textContent.includes(' ')) {
+                    liveNodes.push(node);
+                }
             }
 
             // Zero out all text
@@ -1724,24 +1918,25 @@
             const modeBtns = document.querySelectorAll('.ai-mode-button');
             const hiddenModeInput = document.getElementById('hidden-ai-mode');
             const diseaseButtonsContainer = document.getElementById('disease-type-buttons');
-            const exampleBox = document.getElementById('example-input');
-            const exampleText = document.getElementById('example-text');
-            const useExampleBtn = document.getElementById('use-example-btn');
+            const diseaseParamsTrigger = document.getElementById('disease-params-trigger');
+            const openDiseaseModalBtn = document.getElementById('open-disease-modal-btn');
             const chatInput = document.getElementById('chat_input');
+            const mainInputCard = document.querySelector('.input-card');
 
-            const examples = {
-                'disease_diabetes': "pregnancies: 1, glucose: 120, blood_pressure: 70, skin_thickness: 20, insulin: 79, bmi: 25, diabetes_pedigree_function: 0.5, age: 33",
-                'disease_heart': "age: 45, sex: 1, cp: 2, trestbps: 130, chol: 250, fbs: 0, restecg: 1, thalach: 160, exang: 0, oldpeak: 1.5, slope: 2, ca: 0, thal: 2"
-            };
-
-            function updateExample(mode, subMode = null) {
-                if (mode !== 'disease') { exampleBox.classList.add('hidden'); return; }
-                let key = subMode ? `disease_${subMode}` : 'disease_diabetes';
-                if (examples[key]) {
-                    exampleText.textContent = examples[key];
-                    exampleBox.classList.remove('hidden');
-                } else {
-                    exampleBox.classList.add('hidden');
+            function updateDiseaseTrigger(mode) {
+                if (mode !== 'disease') { 
+                    diseaseParamsTrigger.classList.add('hidden'); 
+                    if (chatInput) {
+                        chatInput.readOnly = false;
+                        chatInput.placeholder = "Ask me anything about your health…";
+                    }
+                    return; 
+                }
+                
+                diseaseParamsTrigger.classList.remove('hidden');
+                if (chatInput) {
+                    chatInput.readOnly = true;
+                    chatInput.placeholder = "Click 'Open Form' to enter parameters";
                 }
             }
 
@@ -1754,7 +1949,7 @@
                     diseaseButtonsContainer && (mode === 'disease'
                         ? diseaseButtonsContainer.classList.remove('hidden')
                         : diseaseButtonsContainer.classList.add('hidden'));
-                    updateExample(mode, document.querySelector('.disease-type-button.active')?.dataset.disease);
+                    updateDiseaseTrigger(mode);
                 });
             });
 
@@ -1767,14 +1962,86 @@
                     diseaseBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     if (hiddenDiseaseInput) hiddenDiseaseInput.value = btn.dataset.disease;
-                    updateExample('disease', btn.dataset.disease);
                 });
             });
 
-            if (useExampleBtn && chatInput) {
-                useExampleBtn.addEventListener('click', () => {
-                    chatInput.value = exampleText.textContent;
-                    chatInput.focus();
+            // Disease Modals
+            const diabetesModal = document.getElementById('diabetes-modal');
+            const heartModal = document.getElementById('heart-modal');
+
+            // Close buttons for modals
+            document.querySelectorAll('#diabetes-modal .close-button, #heart-modal .close-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    diabetesModal.classList.add('hidden');
+                    heartModal.classList.add('hidden');
+                });
+            });
+
+            // Close when clicking outside
+            [diabetesModal, heartModal].forEach(modal => {
+                modal?.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.add('hidden');
+                });
+            });
+
+            // Open modal button
+            if (openDiseaseModalBtn) {
+                openDiseaseModalBtn.addEventListener('click', () => {
+                    const diseaseType = hiddenDiseaseInput ? hiddenDiseaseInput.value : 'diabetes';
+                    if (diseaseType === 'diabetes') {
+                        diabetesModal.classList.remove('hidden');
+                    } else {
+                        heartModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Submit Diabetes Form
+            const diabetesForm = document.getElementById('diabetes-form');
+            if (diabetesForm) {
+                diabetesForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const keys = ['pregnancies', 'glucose', 'blood_pressure', 'skin_thickness', 'insulin', 'bmi', 'diabetes_pedigree_function', 'age-diab'];
+                    const messageStr = keys.map(k => {
+                        const val = document.getElementById('param-' + k)?.value || "0";
+                        return `${k.replace('-diab', '')}: ${val}`;
+                    }).join(', ');
+                    
+                    if (chatInput) {
+                        chatInput.readOnly = false;
+                        chatInput.value = messageStr;
+                    }
+                    diabetesModal.classList.add('hidden');
+                    if (chatForm) chatForm.submit();
+                });
+            }
+
+            // Submit Heart Form
+            const heartForm = document.getElementById('heart-form');
+            if (heartForm) {
+                heartForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const keys = ['age-heart', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal'];
+                    const messageStr = keys.map(k => {
+                        const val = document.getElementById('param-' + k)?.value || "0";
+                        return `${k.replace('-heart', '')}: ${val}`;
+                    }).join(', ');
+                    
+                    if (chatInput) {
+                        chatInput.readOnly = false;
+                        chatInput.value = messageStr;
+                    }
+                    heartModal.classList.add('hidden');
+                    if (chatForm) chatForm.submit();
+                });
+            }
+            
+            // Validate chat submission
+            if (chatForm) {
+                chatForm.addEventListener('submit', (e) => {
+                    if (chatInput && chatInput.value.trim() === '') {
+                        e.preventDefault(); // don't submit if empty
+                    }
                 });
             }
 
@@ -2058,6 +2325,7 @@
             }
         })();
     </script>
+    <script src="{% static 'health_assistant/js/theme-toggle.js' %}"></script>
 </body>
 
 </html>

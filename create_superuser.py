@@ -15,12 +15,12 @@ from django.contrib.auth import authenticate
 
 def create_superuser():
     # Superuser credentials
-    email = "superadmin@curaid.com"
+    email = "superadmin@cura-sphere.com"
     username = "superadmin"
     password = "admin123"
     
     print("=" * 60)
-    print("Creating Superuser for Curaid")
+    print("Creating Superuser for Cura Sphere")
     print("=" * 60)
     
     # Check if user exists

@@ -76,7 +76,7 @@ body {
     color: var(--chat-user-text);
 }
 
-.chat-bubble-Curaid {
+.chat-bubble-Cura Sphere {
     background: var(--chat-bot-bg);
     color: var(--chat-bot-text);
 }
@@ -183,4 +183,373 @@ body {
 /* Prevent transition on page load */
 .no-transition * {
     transition: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   CHAT PAGE — Light Theme Overrides
+   Pale off-white surfaces · near-black text
+═══════════════════════════════════════════ */
+
+/* Ambient orbs — hide in light mode */
+:root:not([data-theme="dark"]) .ambient-bg {
+    display: none;
+}
+
+/* ── Global text colour fix ── */
+:root:not([data-theme="dark"]) body,
+:root:not([data-theme="dark"]) body * {
+    color: #1a1a2e;   /* near-black, not pure #000 */
+}
+
+/* Body / layout */
+:root:not([data-theme="dark"]) body {
+    background: #eef0f5 !important; /* pale blue-grey */
+}
+
+:root:not([data-theme="dark"]) .sidebar {
+    background: #e8eaf0 !important; /* slightly deeper pale */
+    border-right-color: #d4d8e2 !important;
+}
+
+:root:not([data-theme="dark"]) .chat-main {
+    background: #eef0f5 !important;
+}
+
+/* Top bar */
+:root:not([data-theme="dark"]) .chat-topbar {
+    background: rgba(232,234,240,0.92) !important;
+    backdrop-filter: blur(12px);
+    border-bottom-color: #d4d8e2 !important;
+    color: #1a1a2e !important;
+}
+
+:root:not([data-theme="dark"]) .model-badge {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #3a3f5c !important;
+}
+
+/* Sidebar — new chat button */
+:root:not([data-theme="dark"]) .new-chat-btn {
+    color: #5b21b6 !important;
+    border-color: rgba(91,33,182,0.3) !important;
+    background: rgba(91,33,182,0.07) !important;
+}
+:root:not([data-theme="dark"]) .new-chat-btn:hover {
+    background: rgba(91,33,182,0.14) !important;
+    color: #4c1d95 !important;
+}
+
+/* Sidebar — session list text */
+:root:not([data-theme="dark"]) .session-item-wrapper {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .session-item-wrapper span,
+:root:not([data-theme="dark"]) .session-item-wrapper p {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .session-item-wrapper:hover {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+}
+
+/* Quick links */
+:root:not([data-theme="dark"]) .quick-link {
+    color: #3a3f5c !important;
+}
+:root:not([data-theme="dark"]) .quick-link:hover {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .quick-link-icon {
+    color: #3a3f5c !important;
+}
+
+/* ── Chat window headings / text ── */
+:root:not([data-theme="dark"]) h1,
+:root:not([data-theme="dark"]) h2,
+:root:not([data-theme="dark"]) h3,
+:root:not([data-theme="dark"]) p,
+:root:not([data-theme="dark"]) span,
+:root:not([data-theme="dark"]) label {
+    color: #1a1a2e !important;
+}
+
+/* Bot bubble */
+:root:not([data-theme="dark"]) .bubble-bot {
+    background: #e2e5ef !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07) !important;
+}
+:root:not([data-theme="dark"]) .bubble-bot::before {
+    background: none !important;
+}
+:root:not([data-theme="dark"]) .bubble-bot *,
+:root:not([data-theme="dark"]) .bubble-bot .bot-response-text,
+:root:not([data-theme="dark"]) .bubble-bot p,
+:root:not([data-theme="dark"]) .bubble-bot li,
+:root:not([data-theme="dark"]) .bubble-bot code,
+:root:not([data-theme="dark"]) .bubble-bot span {
+    color: #1a1a2e !important;
+}
+
+/* Bot timestamp */
+:root:not([data-theme="dark"]) .bot-timestamp,
+:root:not([data-theme="dark"]) .user-timestamp {
+    color: #64748b !important;
+    opacity: 0.7;
+}
+
+/* User bubble — replace purple gradient with a muted indigo on light bg */
+:root:not([data-theme="dark"]) .bubble-user {
+    background: linear-gradient(135deg, #6d28d9, #5b21b6) !important;
+    color: #f5f3ff !important;
+    box-shadow: 0 4px 14px rgba(91,33,182,0.25) !important;
+}
+:root:not([data-theme="dark"]) .bubble-user * {
+    color: #f5f3ff !important;
+}
+:root:not([data-theme="dark"]) .bubble-user .user-timestamp {
+    color: rgba(245,243,255,0.6) !important;
+    opacity: 1;
+}
+
+/* AI avatar online-dot border */
+:root:not([data-theme="dark"]) .ai-avatar::after {
+    border-color: #eef0f5 !important;
+}
+
+/* Input shell */
+:root:not([data-theme="dark"]) .input-shell {
+    background: #e8eaf0 !important;
+    border-top-color: #d4d8e2 !important;
+}
+:root:not([data-theme="dark"]) .input-card {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+}
+:root:not([data-theme="dark"]) .input-card:focus-within {
+    border-color: rgba(91,33,182,0.5) !important;
+    box-shadow: 0 0 0 3px rgba(91,33,182,0.1) !important;
+}
+:root:not([data-theme="dark"]) .chat-input,
+:root:not([data-theme="dark"]) #chat_input,
+:root:not([data-theme="dark"]) #chat_input:focus {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .chat-input::placeholder,
+:root:not([data-theme="dark"]) #chat_input::placeholder {
+    color: #7a8099 !important;
+}
+:root:not([data-theme="dark"]) .attach-btn {
+    color: #5a607a !important;
+}
+:root:not([data-theme="dark"]) .attach-btn:hover {
+    color: #1a1a2e !important;
+    background: #d4d8e2 !important;
+}
+
+/* Mode / pill buttons */
+:root:not([data-theme="dark"]) .mode-btn {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #3a3f5c !important;
+}
+:root:not([data-theme="dark"]) .mode-btn:hover {
+    background: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .mode-btn.active {
+    background: rgba(91,33,182,0.12) !important;
+    border-color: rgba(91,33,182,0.35) !important;
+    color: #5b21b6 !important;
+}
+
+/* Disease pills */
+:root:not([data-theme="dark"]) .disease-pill {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #3a3f5c !important;
+}
+:root:not([data-theme="dark"]) .disease-pill:hover {
+    background: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .disease-pill.active {
+    background: rgba(79,70,229,0.1) !important;
+    border-color: rgba(79,70,229,0.35) !important;
+    color: #4338ca !important;
+}
+
+/* Report button */
+:root:not([data-theme="dark"]) .report-btn {
+    background: rgba(91,33,182,0.07) !important;
+    border-color: rgba(91,33,182,0.25) !important;
+    color: #5b21b6 !important;
+}
+:root:not([data-theme="dark"]) .report-btn:hover {
+    background: rgba(91,33,182,0.14) !important;
+}
+
+/* Suggestion chips */
+:root:not([data-theme="dark"]) .suggestion-chip {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .suggestion-chip:hover {
+    background: rgba(91,33,182,0.08) !important;
+    border-color: rgba(91,33,182,0.3) !important;
+    color: #1a1a2e !important;
+}
+
+/* Example box */
+:root:not([data-theme="dark"]) .example-box {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .example-box * {
+    color: #1a1a2e !important;
+}
+
+/* Modal */
+:root:not([data-theme="dark"]) .modal-card {
+    background: #e8eaf0 !important;
+    border-color: #c8cdd9 !important;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.12) !important;
+}
+:root:not([data-theme="dark"]) .modal-card * {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .modal-input {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .modal-input::placeholder {
+    color: #7a8099 !important;
+}
+:root:not([data-theme="dark"]) .modal-label {
+    color: #3a3f5c !important;
+}
+
+/* Scrollbar */
+:root:not([data-theme="dark"]) ::-webkit-scrollbar-thumb {
+    background: #b8bccf !important;
+}
+:root:not([data-theme="dark"]) ::-webkit-scrollbar-track {
+    background: #e8eaf0 !important;
+}
+
+/* Theme toggle — pin to bottom-right so it clears the topbar */
+.theme-toggle {
+    top: auto !important;
+    bottom: 24px;
+    right: 24px;
+}
+
+/* ═══════════════════════════════════════════
+   TODO PANEL — Light Theme Overrides
+═══════════════════════════════════════════ */
+
+/* Panel background */
+:root:not([data-theme="dark"]) #todo-panel {
+    background: #e8eaf0 !important;
+    border-color: rgba(91,33,182,0.2) !important;
+    box-shadow:
+        0 0 0 1px rgba(91,33,182,0.06),
+        0 24px 60px rgba(0,0,0,0.12),
+        0 0 30px rgba(91,33,182,0.05) !important;
+}
+
+/* Header */
+:root:not([data-theme="dark"]) .todo-panel-header {
+    border-bottom-color: #d4d8e2 !important;
+}
+:root:not([data-theme="dark"]) .todo-panel-title {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .todo-close-btn {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #3a3f5c !important;
+}
+:root:not([data-theme="dark"]) .todo-close-btn:hover {
+    background: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+
+/* Add row */
+:root:not([data-theme="dark"]) .todo-add-row {
+    border-bottom-color: #d4d8e2 !important;
+}
+:root:not([data-theme="dark"]) .todo-input {
+    background: #dde0ea !important;
+    border-color: #c8cdd9 !important;
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .todo-input::placeholder {
+    color: #7a8099 !important;
+}
+:root:not([data-theme="dark"]) .todo-input:focus {
+    border-color: rgba(91,33,182,0.5) !important;
+}
+
+/* Todo items */
+:root:not([data-theme="dark"]) .todo-item:hover {
+    background: #dde0ea !important;
+}
+:root:not([data-theme="dark"]) .todo-check {
+    border-color: #9aa0b8 !important;
+}
+:root:not([data-theme="dark"]) .todo-check.done {
+    background: #5b21b6 !important;
+    border-color: #5b21b6 !important;
+}
+:root:not([data-theme="dark"]) .todo-text {
+    color: #1a1a2e !important;
+}
+:root:not([data-theme="dark"]) .todo-text.done {
+    color: #7a8099 !important;
+}
+:root:not([data-theme="dark"]) .todo-due {
+    color: #5a607a !important;
+}
+:root:not([data-theme="dark"]) .todo-due.today {
+    color: #d97706 !important;
+}
+:root:not([data-theme="dark"]) .todo-del-btn {
+    color: #7a8099 !important;
+}
+:root:not([data-theme="dark"]) .todo-del-btn:hover {
+    background: rgba(239,68,68,0.1) !important;
+    color: #dc2626 !important;
+}
+
+/* Footer */
+:root:not([data-theme="dark"]) .todo-footer {
+    border-top-color: #d4d8e2 !important;
+}
+:root:not([data-theme="dark"]) .todo-count-label {
+    color: #3a3f5c !important;
+}
+:root:not([data-theme="dark"]) .todo-clear-btn {
+    color: #5a607a !important;
+}
+:root:not([data-theme="dark"]) .todo-clear-btn:hover {
+    color: #dc2626 !important;
+}
+
+/* Empty state */
+:root:not([data-theme="dark"]) .todo-empty {
+    color: #5a607a !important;
+}
+:root:not([data-theme="dark"]) .todo-empty i {
+    color: #9aa0b8 !important;
+}
+:root:not([data-theme="dark"]) .todo-empty p {
+    color: #5a607a !important;
 }

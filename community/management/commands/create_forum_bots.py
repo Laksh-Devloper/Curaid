@@ -37,7 +37,7 @@ class Command(BaseCommand):
             user, created = User.objects.get_or_create(
                 username=bot_name,
                 defaults={
-                    'email': f'{bot_name.lower()}@curaid-bot.com',
+                    'email': f'{bot_name.lower()}@cura-sphere-bot.com',
                     'is_active': True,
                 }
             )

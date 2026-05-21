@@ -101,8 +101,10 @@ def signup_view(request):
             user.set_password(password)
             user.save()
             
-            messages.success(request, 'Account created successfully! You can now log in.')
-            return redirect('login')
+            # Auto-login and redirect to profile with success notification
+            login(request, user)
+            messages.success(request, 'profile_created')
+            return redirect('profile')
             
         except Exception as e:
             print(f"Signup error: {e}")
@@ -187,3 +189,92 @@ class AuthGoogle(APIView):
         return id_token.verify_oauth2_token(
             token, requests.Request(), settings.GOOGLE_OAUTH_CLIENT_ID
         )
+
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+@login_required
+@require_POST
+def edit_profile(request):
+    """Update first name, last name, and username"""
+    user = request.user
+    first_name = request.POST.get('first_name', '').strip()
+    last_name = request.POST.get('last_name', '').strip()
+    new_username = request.POST.get('username', '').strip()
+
+    if not new_username:
+        messages.error(request, 'Username cannot be empty.')
+        return redirect('profile')
+
+    # Check username uniqueness (exclude current user)
+    if CustomUser.objects.filter(username=new_username).exclude(pk=user.pk).exists():
+        messages.error(request, 'That username is already taken.')
+        return redirect('profile')
+
+    user.first_name = first_name
+    user.last_name = last_name
+    user.username = new_username
+    user.save(update_fields=['first_name', 'last_name', 'username'])
+    messages.success(request, 'profile_updated')
+    return redirect('profile')
+
+
+@login_required
+@require_POST
+def edit_email(request):
+    """Update email address"""
+    user = request.user
+    new_email = request.POST.get('email', '').strip()
+    password = request.POST.get('password', '').strip()
+
+    if not new_email or not password:
+        messages.error(request, 'Email and password are required.')
+        return redirect('profile')
+
+    if not user.check_password(password):
+        messages.error(request, 'Incorrect password. Email not updated.')
+        return redirect('profile')
+
+    if CustomUser.objects.filter(email=new_email).exclude(pk=user.pk).exists():
+        messages.error(request, 'That email is already in use.')
+        return redirect('profile')
+
+    user.email = new_email
+    user.save(update_fields=['email'])
+    messages.success(request, 'email_updated')
+    return redirect('profile')
+
+
+@login_required
+@require_POST
+def change_password(request):
+    """Change password"""
+    user = request.user
+    current_password = request.POST.get('current_password', '').strip()
+    new_password = request.POST.get('new_password', '').strip()
+    confirm_password = request.POST.get('confirm_password', '').strip()
+
+    if not current_password or not new_password or not confirm_password:
+        messages.error(request, 'All password fields are required.')
+        return redirect('profile')
+
+    if not user.check_password(current_password):
+        messages.error(request, 'Current password is incorrect.')
+        return redirect('profile')
+
+    if new_password != confirm_password:
+        messages.error(request, 'New passwords do not match.')
+        return redirect('profile')
+
+    if len(new_password) < 8:
+        messages.error(request, 'Password must be at least 8 characters.')
+        return redirect('profile')
+
+    user.set_password(new_password)
+    user.save()
+    # Keep the user logged in after password change
+    from django.contrib.auth import update_session_auth_hash
+    update_session_auth_hash(request, user)
+    messages.success(request, 'password_changed')
+    return redirect('profile')

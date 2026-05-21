@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
         # Get bot users
         bot_users = User.objects.filter(username__endswith='_AI') | User.objects.filter(
-            email__contains='curaid-bot.com'
+            email__contains='cura-sphere-bot.com'
         )
         
         if not bot_users.exists():

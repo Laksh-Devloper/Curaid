@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Companion - Login</title>
+    <title>Cura Sphere - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap"
@@ -106,7 +106,7 @@
 
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="font-display text-3xl font-bold mb-2">Health <span class="text-brand-400">Companion</span>
+                <h1 class="font-display text-3xl font-bold mb-2">Cura <span class="text-brand-400">Sphere</span>
                 </h1>
                 <p class="text-sm text-gray-500">Your Personal Health Guardian</p>
             </div>
@@ -142,10 +142,7 @@
                         placeholder="••••••••" required>
                 </div>
 
-                <div class="flex justify-end">
-                    <a href="#" id="forgot-password"
-                        class="text-xs text-brand-400 hover:text-brand-300 transition-colors">Forgot Password?</a>
-                </div>
+
 
                 <button type="submit"
                     class="w-full py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5">
@@ -208,29 +205,6 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
-    <div id="modal-overlay"
-        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-sm p-6 rounded-2xl animate__animated animate__zoomIn">
-            <h3 class="font-display text-xl font-bold mb-2">Reset Password</h3>
-            <p class="text-sm text-gray-400 mb-6">Enter your email to receive reset instructions.</p>
-
-            <form method="POST" action="">
-                {% csrf_token %}
-                <input type="email" name="email"
-                    class="input-field w-full px-4 py-3 rounded-xl text-sm placeholder-gray-600 mb-4"
-                    placeholder="name@example.com" required>
-
-                <div class="flex gap-3">
-                    <button type="button" id="close-modal"
-                        class="flex-1 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-gray-300 font-medium transition-colors">Cancel</button>
-                    <button type="submit"
-                        class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-500 rounded-lg text-sm text-white font-medium transition-colors">Send
-                        Link</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script>
         // Tab Logic
@@ -256,23 +230,7 @@
         loginTab.addEventListener('click', () => switchTab('login'));
         signupTab.addEventListener('click', () => switchTab('signup'));
 
-        // Modal Logic
-        const modal = document.getElementById('modal-overlay');
-        const forgotBtn = document.getElementById('forgot-password');
-        const closeBtn = document.getElementById('close-modal');
 
-        forgotBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.classList.remove('hidden');
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.add('hidden');
-        });
     </script>
 </body>
 
